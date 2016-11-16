@@ -1,0 +1,81 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{fullpage}
+\begin{document}
+
+\title{Résolution du SSCFLP}
+
+\author{Dumez Dorian}
+
+\maketitle
+
+\section*{Introduction}
+
+TODO
+
+\section{Problèmes étudiés}
+
+La première, et plus simple, version de notre problème est le UFLP. C'est à dire la localisation de service sans capacité. On se permet alors de supposer qu'un dépos peux alimenter un nombre infini de clients, on ne quantifie donc pas la demande des clients.
+
+Le modèle de programmation linéaire est :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall i \in I : \forall j \in J : y_{ij} - x_j \leqslant 0 & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} \geqslant 1 & & \text{ (2)} \\
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
+\end{align*}
+Les $x_j$ représente le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est apareillé avec le dépos j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client/dépos $c_{ij}$.
+
+La contrainte 1 exprime le fait que le dépos j peux alimenter le client i seulement si il est ouvert. La deuxième exprime le fait que tout les clients doivent être couvert.\\
+
+Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarque que tous les dépose n'ont pas forcement la même capacité et les clients des quantité de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarque que l'on interdit pas qu'un client soit ai sa demande soit fragmenté entre plusieurs facilitées.
+
+Le modèle de programmation linéaire est :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall j \in J : \sum \limits_{i \in I} y_{ij} \leqslant s_j x_j & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = w_i & & \text{ (2)}\\
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \mathbb{N} 
+\end{align*}
+Maintenant que des quantités entre en jeux les variables $y_{ij}$ exprime la quantité fournie au client $i$ par le dépos $j$. Et les données supplémentaires sont les capacités $s_j$ des dépos et les demandes $w_i$ des clients. Il faut aussi noter que les coûts d'associations sont maintenant exprimé en prix par unité transporté.
+
+La contrainte 1 représente alors le fait qu'un dépos ne peut fournir plus que sa capacité, si il n'est pas ouvert sa capacité est nécessairement de 0. Et la seconde force la satisfaction complète de la demande de tous les clients.\\
+
+
+La dernière version du problème, celle à laquelle on s’intéresse, le SSCFLP, ajoute la contrainte qu'un client ne peut être servis que par un unique dépos.
+Le modèle de programmation linéaire est :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall j \in J : \sum \limits_{i \in I} y_{ij} w_{ij} \leqslant s_j x_j & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \{0;1\}
+\end{align*}
+Maintenant que les quantités demandé par les clients ne peuvent plus êtres fractionné des booléen suffise de nouveau pour les $y_{ij}$ et exprime de nouveau l'association du client $i$ a la facilité $j$. De plus aucune donné supplémentaire n'est nécessaire.
+
+La contrainte 1 exprime toujours le fait qu'un dépos ne peux livrer plus que sa capacité. Et la contrainte 2 impose le fait que chaque client doit être livré par un unique dépos.
+
+\section{Instances choisies}
+
+Toutes les instances viennent du site http://www-eio.upc.es/~elena/sscplp/index.html.\\
+
+La première instance, p1, est une petite instance normale, elle ne comprend que 20 clients et 10 possibilités de facilités. Les coûts d'ouverture sont relativement grand par rapport aux coûts de connexions et les capacités sont aussi grandes par rapport aux demandes.\\
+
+L'instance p2, petite, possède des coût de connexions élevé par rapport aux coûts d'ouvertures.\\
+
+L'instance p3 est aussi de petite taille mais présente des facilités avec des coûts d'ouvertures très élevés.\\
+
+L'instance p6, toujours petite, mais nous propose des facilités peu chère mais avec de petites capacités par rapport aux demandes.\\
+
+Suivant le même schéma on effectue une monté en charge avec les instances p7(normale), p9(petite et pas chère), p10(facilité chères) et p13(coûts de connexions élevé). En effet celles ci on 30 clients pour 15 possibilités de facilités.\\
+
+Toujours selon le même principe on passe à des instances à 50 clients et 20 sites possibles. On utilise les instances p26(normale), p33(coûts d'ouvertures elevés), p31(facilités peux chères) et p30 (coûts de connexions élevés).\\
+
+\section*{Bibliographie}
+Sources des instances : http://www-eio.upc.es/~elena/sscplp/index.html.\\
+
+\end{document}
