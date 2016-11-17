@@ -14,7 +14,7 @@
 
 \section*{Introduction}
 
-Nous allons ici nous intéresser aux problèmes de FLP. Le but étant de résoudre de manière exacte, grâce à un algorithme de branch \& bound, le problème de SSCFLP. Le problème de FLP, facility location problem, consiste à trouver où ouvrir des services pour couvrir tous ses clients à moindre frais. La version qui nous intéresse, la sigle source avec capacité, rajoute des contraintes de capacité et de condition de livraison pour les clients. Le but de cette étude est d'utiliser la version sans capacité et celle sans contrainte de source unique comme relaxation de notre problème pour obtenir des bornes pour notre algorithme. 
+Nous allons ici nous intéresser aux problèmes de FLP. Le but étant de résoudre de manière exacte, grâce à un algorithme de branch \& bound, le problème de SSCFLP. Le problème de FLP, facility location problem, consiste à trouver où ouvrir des services pour couvrir tous ses clients à moindre frais. La version qui nous intéresse, la single source avec capacité, rajoute des contraintes de capacité et de condition de livraison pour les clients. Le but de cette étude est d'utiliser la version sans capacité et celle sans contrainte de source unique comme relaxation de notre problème pour obtenir des bornes pour notre algorithme. 
 
 \section{Problèmes étudiés}
 
@@ -28,11 +28,11 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} \geqslant 1 & & \text{ (2)} \\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
 \end{align*}
-Les $x_j$ représente le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est apareillé avec le dépos j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client-dépos $c_{ij}$.
+Les $x_j$ représentent le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est appareillé avec le dépos j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client-dépos $c_{ij}$.
 
 La contrainte 1 exprime le fait que le dépos j peux alimenter le client i seulement si il est ouvert. La deuxième exprime le fait que tout les clients doivent être couvert.\\
 
-Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépos n'ont pas forcement la même capacité et les clients des quantité de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarque que l'on interdit pas qu'un client soit ai sa demande soit fragmenté entre plusieurs facilitées.
+Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépos n'ont pas forcement la même capacité et les clients des quantité de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarque que l'on interdit pas qu'un client ait sa demande soit fragmenté entre plusieurs facilitées.
 
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
