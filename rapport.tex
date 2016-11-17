@@ -32,7 +32,7 @@ Les $x_j$ représentent le fait que la facilité $j$ est ouverte et les $y_{ij}$
 
 La contrainte 1 exprime le fait que le dépos j peux alimenter le client i seulement si il est ouvert. La deuxième exprime le fait que tout les clients doivent être couvert.\\
 
-Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépos n'ont pas forcement la même capacité et les clients des quantité de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarque que l'on interdit pas qu'un client ait sa demande soit fragmenté entre plusieurs facilitées.
+Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépos n'ont pas forcement la même capacité et les clients des quantités de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarquer que l'on n'interdit pas qu'un client ait sa demande fragmenté entre plusieurs facilitées.
 
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
@@ -42,7 +42,7 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} = w_i & & \text{ (2)}\\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \mathbb{R}^{+} 
 \end{align*}
-Maintenant que des quantités entre en jeux les variables $y_{ij}$ exprime la quantité fournie au client $i$ par le dépos $j$. Et les données supplémentaires sont les capacités $s_j$ des dépos et les demandes $w_i$ des clients. Il faut aussi noter que les coûts d'associations sont maintenant exprimé en prix par unité transporté.
+Maintenant que des quantités entre en jeux, les variables $y_{ij}$ expriment la quantité fournie au client $i$ par le dépos $j$. Les données supplémentaires sont les capacités $s_j$ des dépos et les demandes $w_i$ des clients. Il faut aussi noter que les coûts d'associations sont maintenant exprimé en prix par unité transporté.
 
 La contrainte 1 représente alors le fait qu'un dépos ne peut fournir plus que sa capacité, si il n'est pas ouvert sa capacité est nécessairement de 0. Et la seconde force la satisfaction complète de la demande de tous les clients.
 
@@ -55,7 +55,7 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \{0;1\}
 \end{align*}
-Maintenant que les quantités demandé par les clients ne peuvent plus êtres fractionné des booléen suffise de nouveau pour les $y_{ij}$ et exprime de nouveau l'association du client $i$ a la facilité $j$. De plus aucune donné supplémentaire n'est nécessaire.
+Maintenant que les quantités demandés par les clients ne peuvent plus êtres fractionnés des booléens suffisent de nouveau pour les $y_{ij}$ et exprime de nouveau l'association du client $i$ à la facilité $j$. De plus aucune donné supplémentaire n'est nécessaire.
 
 La contrainte 1 exprime toujours le fait qu'un dépos ne peux livrer plus que sa capacité. Et la contrainte 2 impose le fait que chaque client doit être livré par un unique dépos.\\
 
@@ -67,7 +67,7 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
 \end{align*}
-En effet, la fonction d’objectif étant en minimisation, la solution optimale ne couvrira jamais, sauf dégénérescence causé par coûts d’appareillages nul, un client 2 fois. On peut alors dire que la contrainte est satisfaite si et seulement si chaque client est couvert une unique fois.\\
+En effet, la fonction d’objectif étant en minimisation, la solution optimale ne couvrira jamais, sauf dégénérescence causée par coûts d’appareillages nul, un client 2 fois. On peut alors dire que la contrainte est satisfaite si et seulement si chaque client est couvert une unique fois.\\
 De plus,on peut re-écrire la contrainte qui force un dépos utilisé à être ouvert pour faire apparaître plus clairement la relaxation du SSCFLP en UFLP :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
 s.c.
@@ -76,9 +76,9 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
 \end{align*}
-En effet l'usage d'un M (une valeur devant laquelle toute demande est négligeable) permet d'oublier la contrainte de capacité. La relaxation du SSCFLP en UFLP s'efectue donc en relaxant la première contrainte. La solution obtenue avec ce programme respectera la condition de source unique mais pas celles des capacités.\\
+En effet l'usage d'un M (une valeur devant laquelle toute demande est négligeable) permet d'oublier la contrainte de capacité. La relaxation du SSCFLP en UFLP s’effectue donc en relaxant la première contrainte. La solution obtenue avec ce programme respectera la condition de source unique mais pas celles des capacités.\\
 
-On remarque aussi que l'on peut aussi l’écrire sous une autre forme, qui rend évident le fait que le CFLP est une relaxation du SSCFLP :\\
+On remarque que on peut aussi écrire CFLP sous une autre forme, qui rend évident le fait que le CFLP est une relaxation du SSCFLP :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij} w_{ij}$\\
 s.c.
 \begin{align*}
