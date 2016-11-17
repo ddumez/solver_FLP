@@ -1,4 +1,5 @@
 \documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc} 
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
@@ -13,7 +14,7 @@
 
 \section*{Introduction}
 
-TODO
+Nous allons ici nous intéresser aux problèmes de FLP. Le but étant de résoudre de manière exacte, grâce à un algorithme de branch \& bound, le problème de SSCFLP. Le problème de FLP, facility location problem, consiste à trouver où ouvrir des services pour couvrir tous ses clients à moindre frais. La version qui nous intéresse, la sigle source avec capacité, rajoute des contraintes de capacité et de condition de livraison pour les clients. Le but de cette étude est d'utiliser la version sans capacité et celle sans contrainte de source unique comme relaxation de notre problème pour obtenir des bornes pour notre algorithme. 
 
 \section{Problèmes étudiés}
 
@@ -27,11 +28,11 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} \geqslant 1 & & \text{ (2)} \\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
 \end{align*}
-Les $x_j$ représente le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est apareillé avec le dépos j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client/dépos $c_{ij}$.
+Les $x_j$ représente le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est apareillé avec le dépos j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client-dépos $c_{ij}$.
 
 La contrainte 1 exprime le fait que le dépos j peux alimenter le client i seulement si il est ouvert. La deuxième exprime le fait que tout les clients doivent être couvert.\\
 
-Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarque que tous les dépose n'ont pas forcement la même capacité et les clients des quantité de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarque que l'on interdit pas qu'un client soit ai sa demande soit fragmenté entre plusieurs facilitées.
+Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépos n'ont pas forcement la même capacité et les clients des quantité de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarque que l'on interdit pas qu'un client soit ai sa demande soit fragmenté entre plusieurs facilitées.
 
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
@@ -39,14 +40,13 @@ s.c.
 \begin{align*}
  \forall j \in J : \sum \limits_{i \in I} y_{ij} \leqslant s_j x_j & & \text{ (1)} \\
  \forall i \in I : \sum \limits_{j \in J} y_{ij} = w_i & & \text{ (2)}\\
- \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \mathbb{N} 
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \mathbb{R}^{+} 
 \end{align*}
 Maintenant que des quantités entre en jeux les variables $y_{ij}$ exprime la quantité fournie au client $i$ par le dépos $j$. Et les données supplémentaires sont les capacités $s_j$ des dépos et les demandes $w_i$ des clients. Il faut aussi noter que les coûts d'associations sont maintenant exprimé en prix par unité transporté.
 
-La contrainte 1 représente alors le fait qu'un dépos ne peut fournir plus que sa capacité, si il n'est pas ouvert sa capacité est nécessairement de 0. Et la seconde force la satisfaction complète de la demande de tous les clients.\\
+La contrainte 1 représente alors le fait qu'un dépos ne peut fournir plus que sa capacité, si il n'est pas ouvert sa capacité est nécessairement de 0. Et la seconde force la satisfaction complète de la demande de tous les clients.
 
-
-La dernière version du problème, celle à laquelle on s’intéresse, le SSCFLP, ajoute la contrainte qu'un client ne peut être servis que par un unique dépos.
+La dernière version du problème, celle à laquelle on s'intéresse, le SSCFLP, ajoute la contrainte qu'un client ne peut être servis que par un unique dépos.
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
 s.c.
@@ -57,7 +57,36 @@ s.c.
 \end{align*}
 Maintenant que les quantités demandé par les clients ne peuvent plus êtres fractionné des booléen suffise de nouveau pour les $y_{ij}$ et exprime de nouveau l'association du client $i$ a la facilité $j$. De plus aucune donné supplémentaire n'est nécessaire.
 
-La contrainte 1 exprime toujours le fait qu'un dépos ne peux livrer plus que sa capacité. Et la contrainte 2 impose le fait que chaque client doit être livré par un unique dépos.
+La contrainte 1 exprime toujours le fait qu'un dépos ne peux livrer plus que sa capacité. Et la contrainte 2 impose le fait que chaque client doit être livré par un unique dépos.\\
+
+On remarque alors que le programme de l'UFLP peux être re-écrit si les coûts d'association sont non-négatif :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall i \in I : \forall j \in J : y_{ij} - x_j \leqslant 0 & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
+\end{align*}
+En effet, la fonction d’objectif étant en minimisation, la solution optimale ne couvrira jamais, sauf dégénérescence causé par coûts d’appareillages nul, un client 2 fois. On peut alors dire que la contrainte est satisfaite si et seulement si chaque client est couvert une unique fois.\\
+De plus,on peut re-écrire la contrainte qui force un dépos utilisé à être ouvert pour faire apparaître plus clairement la relaxation du SSCFLP en UFLP :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall j \in J : \sum \limits_{i \in I} y_{ij} w_{ij} \leqslant M x_j & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
+\end{align*}
+En effet l'usage d'un M (une valeur devant laquelle toute demande est négligeable) permet d'oublier la contrainte de capacité. La relaxation du SSCFLP en UFLP s'efectue donc en relaxant la première contrainte. La solution obtenue avec ce programme respectera la condition de source unique mais pas celles des capacités.\\
+
+On remarque aussi que l'on peut aussi l’écrire sous une autre forme, qui rend évident le fait que le CFLP est une relaxation du SSCFLP :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij} w_{ij}$\\
+s.c.
+\begin{align*}
+ \forall j \in J : \sum \limits_{i \in I} y_{ij} w_{ij} \leqslant s_j x_j & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
+ \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \left[ 0;1 \right]
+\end{align*}
+Les  $y_{ij}$ représente alors la part de la demande de $i$ qui est assumé par la facilité $j$. On remarque alors que si l'on prend le programme linéaire du SSCFLP et qu'on y exprime les coûts d'associations en prix par unité alors on a exactement le même programme à l’exception de la relaxation linéaire des $y_{ij}$. La solution obtenue avec ce programme respectera les contraintes de capacités mais pas celle de source unique.
 
 \section{Instances choisies}
 
