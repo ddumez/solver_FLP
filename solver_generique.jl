@@ -1,6 +1,14 @@
 using JuMP
-using GLPKMathProgInterface
-using CPLEX
+
+#pour résoudre avec GLPK
+#using GLPKMathProgInterface
+#using GLPK
+
+#pour resoudre avec CPLEX
+#using CPLEX
+
+#pour resoudre avec Mosek
+using Mosek
 
 function main()
 
@@ -40,6 +48,7 @@ println("(",nbClients,";",nbDepos,")")
         push!(capacite, parse(Int64, tmp[j]))
     end
 
+#= test de la lecture des donnees
     println(nbClients)
     println(nbDepos)
     for i = 1:nbClients
@@ -51,13 +60,16 @@ println("(",nbClients,";",nbDepos,")")
     println(demande)
     println(ouverture)
     println(capacite)
-
+=#
 
     #declaration
-    mSSCFLP = Model(solver=CplexSolver())::Model
+    #mSSCFLP = Model(solver=GLPKSolverMIP())::Model #pour resoudre avec GLPK
+    #mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
+    mSSCFLP = Model(solver=MosekSolver())::Model #pour resoudre avec Mosek
+
     #variables
-    @variable(mSSCFLP, x[1:nbDepos], Bin)
-    @variable(mSSCFLP, y[1:nbClients,1:nbDepos], Bin)
+    @variable(mSSCFLP, x[1:nbDepos], Bin) #x[i] = 1 ssi le depos i est ouvert
+    @variable(mSSCFLP, y[1:nbClients,1:nbDepos], Bin) #y[i,j] =1 ssi le client i est aprovisionne par le depos j
 
     @objective(mSSCFLP, Min, sum(ouverture[j] * x[j] + sum( y[i,j] * association[i,j] for i=1:nbClients ) for j=1:nbDepos))
 
@@ -68,13 +80,15 @@ println("(",nbClients,";",nbDepos,")")
         @constraint(mSSCFLP, sum(y[i,j] for j=1:nbDepos) == 1)
     end
 
-#println(mSSCFLP)
+#test : affichage du modele
+println(mSSCFLP)
 
+#resolution et affichage du temps de calcul
     @time solve(mSSCFLP; suppress_warnings=true, relaxation=false)
 
     #extraction des résultats
     println("z = : ", getobjectivevalue(mSSCFLP))
-#=    for i = 1:nbClients
+    for i = 1:nbClients
         for j = 1:nbDepos
             print(getvalue(y[i,j])," ")
         end
@@ -83,7 +97,7 @@ println("(",nbClients,";",nbDepos,")")
     println("\n")
     for j = 1:nbDepos
         print(getvalue(x[j])," ")
-    end=#
+    end
     println("\n\n")
 
 end

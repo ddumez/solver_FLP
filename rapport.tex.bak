@@ -133,7 +133,7 @@ Je me suis tourné vers les 2 autres solveurs interfacé avec JuMP qui propose l
   \hline
 	20 & 10 & 2.02 & 2.61 & 10.6 & 0.85 \\
 	30 & 15 & 10.14 & 3.52 & 23.31 & 5.53 \\
-	50 & 20 & 43.32 & 130.37 & long & long \\
+	50 & 20 & 43.32 & 130.37 & 1 & 2 \\
   \hline
 \end{tabular}
 \caption{temps de résolution par Mosek}
@@ -142,7 +142,7 @@ Je me suis tourné vers les 2 autres solveurs interfacé avec JuMP qui propose l
 
 On prend comme étalon les instances dites normale, ne présentant à priori aucune particularité. On peut alors supposer que les instances avec des grand coûts de connexions ou d'ouverture sont plus compliqué. Par contre on ne peut rien dire sur les instance concernant les petits dépos pas cher.\\
 
-Je n'ai pas inclus les solutions fournie dans le dossier de rendu car CPLEX et Mosek donnent parfois des valeurs différente de 0 ou 1 à des variables binaires (elle le sont bien selon l'affichage de la modélisation). Mais ces imprécisions sont de l'ordre de $10^-10$ ou telles que des $-0$.
+Je n'ai pas inclus les solutions fournie dans le dossier de rendu car CPLEX et Mosek donnent parfois des valeurs différente de 0 ou 1 à des variables binaires (elle le sont bien selon l'affichage de la modélisation). Mais ces imprécisions sont de l'ordre de $10^-10$ ou telle que des $-0$.
 
 \section*{Bibliographie}
 Sources des instances : http://www-eio.upc.es/~elena/sscplp/index.html.\\
