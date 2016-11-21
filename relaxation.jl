@@ -1,17 +1,16 @@
 using JuMP
 
 #pour résoudre avec GLPK
-#using GLPKMathProgInterface
-#using GLPK
+using GLPKMathProgInterface
+using GLPK
 
 #pour resoudre avec CPLEX
-# export LD_LIBRARY_PATH="/user/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
-using CPLEX
+#using CPLEX
 
 #pour resoudre avec Mosek
 #using Mosek
 
-function generique()
+function relaxe()
 
 #fichier a utiliser
 nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33]
@@ -27,7 +26,7 @@ println("(",nbClients,";",nbDepos,")")
     for i = 1:nbClients
         tmp = split(readline(f)," ")::Array
         for j = 1:nbDepos
-            association[i,j] = parse(Int64, tmp[j])::Int64
+            association[i,j] = parse(Int64, tmp[j])
         end
     end
 
@@ -35,6 +34,15 @@ println("(",nbClients,";",nbDepos,")")
     demande = []::Array
     for i = 1:nbClients
         push!(demande, parse(Int64, tmp[i]))
+    end
+
+    #on divise les couts par la demande pour avoir les couts par unite
+    association2 = zero(association)
+    for i = 1:nbClients
+        tmp = split(readline(f)," ")::Array
+        for j = 1:nbDepos
+            association2[i,j] = (association[i,j]) / (demande[i])
+        end
     end
 
     tmp = split(readline(f)," ")::Array
@@ -54,7 +62,7 @@ println("(",nbClients,";",nbDepos,")")
     println(nbDepos)
     for i = 1:nbClients
         for j = 1:nbDepos
-            print(association[i,j]," ")
+            print(association2[i,j]," ")
         end
         print("\n")
     end
@@ -64,18 +72,25 @@ println("(",nbClients,";",nbDepos,")")
 =#
 
     #declaration
-    #mSSCFLP = Model(solver=GLPKSolverMIP())::Model #pour resoudre avec GLPK
-    mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
+    mSSCFLP = Model(solver=GLPKSolverLP())::Model #pour resoudre avec GLPK
+    #mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
     #mSSCFLP = Model(solver=MosekSolver())::Model #pour resoudre avec Mosek
 
     #variables
-    @variable(mSSCFLP, x[1:nbDepos], Bin) #x[i] = 1 ssi le depos i est ouvert
-    @variable(mSSCFLP, y[1:nbClients,1:nbDepos], Bin) #y[i,j] =1 ssi le client i est aprovisionne par le depos j
+    @variable(mSSCFLP, x[1:nbDepos] >= 0)
+    @variable(mSSCFLP, y[1:nbClients,1:nbDepos] >= 0)
 
-    #fonction eco
-    @objective(mSSCFLP, Min, sum(ouverture[j] * x[j] + sum( y[i,j] * association[i,j] for i=1:nbClients ) for j=1:nbDepos))
+    for j=1:nbDepos
+        for i=1:nbClients
+            setupperbound(y[i,j], 1)
+        end
+        setupperbound(x[j], 1)
+    end
 
-    #contraintes
+    #fonction eco relaxe
+    @objective(mSSCFLP, Min, sum(ouverture[j] * x[j] + sum( y[i,j] * association2[i,j] * demande[i] for i=1:nbClients ) for j=1:nbDepos))
+
+    #contraintes relaxe
     for j = 1:nbDepos
         @constraint(mSSCFLP, sum(y[i,j] * demande[i] for i=1:nbClients) <= capacite[j]*x[j])
     end
@@ -107,4 +122,4 @@ end
 
 end #de generique()
 
-generique()
+relaxe()
