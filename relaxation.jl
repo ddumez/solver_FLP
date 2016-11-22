@@ -21,12 +21,13 @@ for nom in nomfile
     tmp = split(readline(f)," ")::Array
     nbClients = parse(Int64, tmp[1])::Int64
     nbDepos = parse(Int64, tmp[2])::Int64
-println("(",nbClients,";",nbDepos,")")
-    association = collect(reshape(1:nbDepos*nbClients, nbClients, nbDepos))::Array #cout d'association
+println("(",nbClients,";",nbDepos,") : p$(nom)")
+    association = fill(1.0, (nbClients,nbDepos)) #cout d'association
+    
     for i = 1:nbClients
         tmp = split(readline(f)," ")::Array
         for j = 1:nbDepos
-            association[i,j] = parse(Int64, tmp[j])
+            association[i,j] = (Float64)(parse(Int64, tmp[j]))
         end
     end
 
@@ -36,12 +37,10 @@ println("(",nbClients,";",nbDepos,")")
         push!(demande, parse(Int64, tmp[i]))
     end
 
-    #on divise les couts par la demande pour avoir les couts par unite
-    association2 = zero(association)
+    #passage des couts en cout par unité
     for i = 1:nbClients
-        tmp = split(readline(f)," ")::Array
         for j = 1:nbDepos
-            association2[i,j] = (association[i,j]) / (demande[i])
+            association[i,j] = association[i,j] / demande[i];
         end
     end
 
@@ -88,7 +87,7 @@ println("(",nbClients,";",nbDepos,")")
     end
 
     #fonction eco relaxe
-    @objective(mSSCFLP, Min, sum(ouverture[j] * x[j] + sum( y[i,j] * association2[i,j] * demande[i] for i=1:nbClients ) for j=1:nbDepos))
+    @objective(mSSCFLP, Min, sum(ouverture[j] * x[j] + sum( y[i,j] * association[i,j] * demande[i] for i=1:nbClients ) for j=1:nbDepos))
 
     #contraintes relaxe
     for j = 1:nbDepos
@@ -120,6 +119,6 @@ println("(",nbClients,";",nbDepos,")")
 
 end
 
-end #de generique()
+end #de relaxe()
 
 relaxe()
