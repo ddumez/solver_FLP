@@ -22,7 +22,7 @@ for nom in nomfile
     tmp = split(readline(f)," ")::Array
     nbClients = parse(Int64, tmp[1])::Int64
     nbDepos = parse(Int64, tmp[2])::Int64
-println("(",nbClients,";",nbDepos,")")
+println("(",nbClients,";",nbDepos,") : p$(nom)")
     association = collect(reshape(1:nbDepos*nbClients, nbClients, nbDepos))::Array #cout d'association
     for i = 1:nbClients
         tmp = split(readline(f)," ")::Array

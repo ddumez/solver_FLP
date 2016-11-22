@@ -22,8 +22,8 @@ for nom in nomfile
     nbClients = parse(Int64, tmp[1])::Int64
     nbDepos = parse(Int64, tmp[2])::Int64
 println("(",nbClients,";",nbDepos,") : p$(nom)")
-    association = fill(1.0, (nbClients,nbDepos)) #cout d'association
     
+    association = fill(1.0, (nbClients,nbDepos)) #cout d'association
     for i = 1:nbClients
         tmp = split(readline(f)," ")::Array
         for j = 1:nbDepos
@@ -55,20 +55,6 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     for j = 1:nbDepos
         push!(capacite, parse(Int64, tmp[j]))
     end
-
-#= test de la lecture des donnees
-    println(nbClients)
-    println(nbDepos)
-    for i = 1:nbClients
-        for j = 1:nbDepos
-            print(association2[i,j]," ")
-        end
-        print("\n")
-    end
-    println(demande)
-    println(ouverture)
-    println(capacite)
-=#
 
     #declaration
     mSSCFLP = Model(solver=GLPKSolverLP())::Model #pour resoudre avec GLPK
