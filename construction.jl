@@ -1,7 +1,9 @@
 function contruit()
 
 #fichier a utiliser
-nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33]
+nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33] #nom des fichiers d'instances
+ #valeur des solutions optimale (sauf pour 0)
+zopt = Dict{Integer,Integer}(0 => 1, 1 => 2014, 2 => 4251, 3 => 6051, 6 => 2269, 7 => 4366, 9 => 2480, 10 => 23112, 13 => 3760, 26 => 4448, 30 => 10816, 31 => 4466, 33 => 39463)
 
 for nom in nomfile
 #lecture des donnees
@@ -56,7 +58,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     for i=1:nbDepos
         push!(x, 0)
     end
-    y = association = collect(reshape(1:nbDepos*nbClients, nbClients, nbDepos))::Array
+    y = collect(reshape(1:nbDepos*nbClients, nbClients, nbDepos))::Array
     for i = 1:nbClients
         for j = 1:nbDepos
             y[i,j] = 0;
@@ -70,18 +72,10 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
             ordre[j,i] = i
         end
     end
-
-    #tri des clients par delta pour les facilite
-    ordre = collect(reshape(1:nbDepos*nbClients, nbDepos, nbClients))::Array
-    for j =1:nbDepos
-        for i=1:nbClients
-            ordre[j,i] = i
-        end
-    end
-    triDelta(delta, ordre)
+    ordre = triDelta(delta, ordre)     #tri des clients par delta pour les facilite
 
     #initialisation des ensembles
-    Orest = Set{Int64}(); #facilite restantes 
+    Orest = Set{Int64}(); #facilite restantes
     Crest = Set{Int64}(); #clients restant
     O = Set{Int64}(); #facilite ouverte
     C = Set{Int64}(); #client satisfait
@@ -113,7 +107,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
             phi[j] = ouverture[j]
             for i in 1:nbClients
                 if ( (! isempty(find( x-> x==ordre[j,i] , Crest))) && (capaciterestante >= demande[ordre[j,i]]) ) #si le client ordre[i,j] n'a pas ete asigne et il rentre
-                    push!(clients[j], i)
+                    push!(clients[j], ordre[j,i])
                     capaciterestante = capaciterestante - demande[ordre[j,i]]
                     phi[j] = phi[j] + association[ordre[j,i],j]
                 end
@@ -124,7 +118,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
         #recherche du phimin
         jphimin = first(Orest)
         for j in Orest
-            if phi[jphimin] < phi[j]
+            if phi[jphimin] > phi[j]
                 jphimin = j
             end
         end
@@ -136,13 +130,14 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
         for i = 1:size(clients[jphimin])[1]
             Crest = setdiff(Crest,Set{Int64}(clients[jphimin][i])) #client jphimin traite
             C = union(C, Set{Int64}(clients[jphimin][i])) #client jphimin traite
-            y[i,jphimin] = 1 #on associe le client i au depos jphimin
+            y[clients[jphimin][i],jphimin] = 1 #on associe le client i au depos jphimin
         end
     end
 
     #calcul de la valeur de la solution
-    z = sum(ouverture[j] * x[j] + sum( y[i,j] * association[i,j] * demande[i] for i=1:nbClients ) for j=1:nbDepos)
+    z = sum(ouverture[j] * x[j] + sum( y[i,j] * association[i,j] for i=1:nbClients ) for j=1:nbDepos)
     println("z = : ", z)
+    println("diférence proportioenlle avec la solution optimale : ", ((z*100)/zopt[nom]) -100 )
     for i = 1:nbClients
         for j = 1:nbDepos
             print(y[i,j]," ")
@@ -159,9 +154,10 @@ end #de contruit()
 
 # trie chaque ligne j par ordre croissant de delta[i,j] ou i est le client corespondant
 function triDeltaRec(delta::Array{Int64,2})
-    compteur = 0;
+    compteur = [];
+    push!(compteur,0);
     return function (tab::Array{Int64})
-            compteur = compteur +1 
+            compteur[1] = compteur[1] +1
             sort!(tab, by=x->delta[x,compteur[1]])
         end
 end
