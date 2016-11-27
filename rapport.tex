@@ -104,7 +104,7 @@ Suivant le même schéma on effectue une monté en charge avec les instances p7(
 
 Toujours selon le même principe on passe à des instances à 50 clients et 20 sites possibles. On utilise les instances p26(normale), p33(coûts d'ouvertures elevés), p31(facilités peux chères) et p30 (coûts de connexions élevés).\\
 
-\section{Tests avec des solveur génériques}
+\section{Résolution avec des solveur génériques}
 
 Premièrement il faut noter que j'ai opté pour d'autres solveurs car GLPK n'y arrivait pas. En effet des tests sur de toutes petites instances on montré que le modèle et l'appel était correct mais GLPK ne parvenait pas à résoudre le problème. Sur la première des instances les plus petites il y parvenais en 25 minutes et ne parvenait pas à résoudre la seconde à cause d'une trop grande empreinte mémoire.\\
 
@@ -144,7 +144,124 @@ On prend comme étalon les instances dites normale, ne présentant à priori auc
 
 Je n'ai pas inclus les solutions fournie dans le dossier de rendu car CPLEX et Mosek donnent parfois des valeurs différente de 0 ou 1 à des variables binaires (elle le sont bien selon l'affichage de la modélisation). Mais ces imprécisions sont de l'ordre de $10^-10$ ou telles que des $-0$.
 
+\section{Bornes}
+
+\subsection{Borne primale}
+
+Pour obtenir une borne primale nous avons utilisé l'heuristique de construction de Delmaire. Cette dernière permet d'obtenir une solution réalisable non triviale. Elle se base sur l’idée que les services à ouvrir doivent avoir le coût par client le plus faible et que les clients doivent êtres associés au facilitées avec lequel ils coûtent le moins chers.\\
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  instance & type & \% de coût supplémentaire & temps de calcul \\
+  \hline
+	p1 & normale & 6.65 & 0.001 \\
+	p2 & ++connexion & 11.03 & 0.001 \\
+	p3 & ++ouverture & 14.95 & 0.001 \\
+	p6 & - - capacité & 14.85 & 0.001 \\
+  \hline
+	p7 & normale & 6.18 & 0.009 \\
+	p13 & ++connexion & 13.51 & 0.006 \\
+	p10 & ++ouverture & 11.60 & 0.007 \\
+	p9 & - - capacité & 10.20 & 0.007 \\
+  \hline	
+	p26 & normale & 13.24 & 0.028 \\
+	p30 & ++connexion & 8.85 & 0.030 \\
+	p33 & ++ouverture & 15.31 & 0.031 \\
+	p31 & - - capacité & 8.28 & 0.027 \\
+  \hline
+\end{tabular}
+\caption{Tests de l'heuristique de Delmaire}
+\label{delmaire}
+\end{table}
+
+Premièrement on observe que les temps d’exécution sont petit, et n'augmente pas trop avec la taille des instances. De plus le type d'instance n'impacte que très peu sur le temps de calcul. On peu donc envisager d'utiliser cette heuristique de construction de manière très agressive durant notre branch and bound.\\
+
+De manière grossière l'heuristique semble mieux fonctionner sur les instances normales et moins sur celle à coûts d'ouvertures élevés. Mais dans tous les cas la solution fournit nous donne une borne primale correcte. 
+
+\subsection{Borne duale}
+
+Comme relaxation continue nous avons utilise la modélisation du CFLP auquel on a relâché la contrainte de type sur les variables désignant l’ouverture des dépos. C'est à dire que l'on peu ouvrir un dépos à moitié.\\
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+  \hline
+  instance & type & \% de coût inférieur & temps GLPK & temps Mosek & temps CPLEX \\
+  \hline
+	p1 & normale & 10.95 & 0.0008 & 0.0025 & 0.0010 \\
+	p2 & ++connexion & 6.18 & 0.0009 & 0.0030 & 0.0008 \\
+	p3 & ++ouverture & 6.47 & 0.0009 & 0.0024 & 0.0007 \\
+	p6 & - - capacité & 8.86 & 0.0009 & 0.0020 & 0.0008 \\
+  \hline
+	p7 & normale & 5.47 & 0.0016 & 0.0036 & 0.0013 \\
+	p13 & ++connexion & 5.24 & 0.0020 & 0.0028 & 0.0012 \\
+	p10 & ++ouverture & 1.26 & 0.0022 & 0.0032 & 0.0013 \\
+	p9 & - - capacité & 7.49 & 0.0024 & 0.0035 & 0.0012 \\
+  \hline	
+	p26 & normale & 5.66 & 0.0056 & 0.0053 & 0.0022 \\
+	p30 & ++connexion & 5.46 & 0.0060 & 0.0052 & 0.0022 \\
+	p33 & ++ouverture & 2.28 & 0.0061 & 0.0062 & 0.0023 \\
+	p31 & - - capacité & 6.80 & 0.0056 & 0.0054 & 0.0021 \\
+  \hline
+\end{tabular}
+\caption{Expérimentations relaxation}
+\label{relax}
+\end{table}
+
+Premièrement on peu encore noté que les temps d’exécutions restent petit donc on pourra aussi utiliser ce procédé de manière fréquente dans le branch and bound.\\
+
+La qualité de la relaxation diffère significativement entre les types d'instances donc on peu les étudiés séparément :
+\begin{itemize}
+\item
+les instances normales font parties de celle sur lequel la relaxation est de moins bonne qualité. Quand on observe les solutions trouve on remarque que la solution relâché a tendance a ne pas ouvrir un dépos au profit d'autre partiellement ouvert. Et au contraire la relaxation profite peu de la distribution de la demande sur deux dépos. Au vu de ces résultat la possibilité de relâcher de SSCFLP en CFLP pourrai corriger ce problème si il ne se déplace pas vers  la distribution des demande entre les dépos.
+\item
+sur les instances à fort coût de connexion la relaxation est de qualité moyenne. Mais en réalité si on observe les résultats, ils ont la même forme que pour les instances normales. Sauf qu'ici la part des coûts engendrés par les connexions est plus importante donc, vu que l'on compare relativement, la relaxation semble de meilleure qualité.
+\item
+sur les instances présentant de grands coûts d'ouvertures la relaxation est généralement de très bonne qualité. La solution proposé utilise alors plus la distribution de la demande entre plusieurs dépos, et les services ouvert sont à peu près les même mais pas forcement ouvert en entier. Mais étant donne que la plupart des coûts des générés par l’ouverture des dépos ce doit surtout être la relaxation sur l’ouverture des dépos qui diminue la qualité. Mais la différence relative reste faible car les solutions optimales restent très chères.
+\item
+enfin les instances avec des facilités à faibles capacités sont mal approximé par relaxation. Pour ces instances on retrouve les même problème qu'avec les instances normales. 
+\end{itemize}
+
+Au vu de ces remarque j'ai expérimenté la relaxation en CFLP :
+\begin{table}[!h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+  \hline
+  instance & type & \% de coût inférieur & temps GLPK & temps Mosek & temps CPLEX \\
+  \hline
+	p1 & normale & 10.08 & 0.0019 & 0.0174 & 0.0078 \\
+	p2 & ++connexion & 4.48 & 0.0046 & 0.0114 & 0.0337 \\
+	p3 & ++ouverture & 1.10 & 0.0051 & 0.0227 & 0.0318 \\
+	p6 & - - capacité & 4.24 & 0.0131 & 0.0347 & 0.0131 \\
+  \hline
+	p7 & normale & 4.13 & 0.0063 & 0.0645 & 0.0696 \\
+	p13 & ++connexion & 1.59 & 0.0505 & 0.0815 & 0.0397 \\
+	p10 & ++ouverture & 0.50 & 0.0056 & 0.0571 & 0.0175 \\
+	p9 & - - capacité & 5.01 & 0.0165 & 0.0581 & 0.0371 \\
+  \hline	
+	p26 & normale & 2.71 & 0.0743 & 0.1034 & 0.0779 \\
+	p30 & ++connexion & 3.50 & 0.1169 & 0.2074 & 0.1007 \\
+	p33 & ++ouverture & 0.55 & 0.0191 & 0.0571 & 0.0222 \\
+	p31 & - - capacité & 5.03 & 0.0354 & 0.0616 & 0.0478 \\
+  \hline
+\end{tabular}
+\caption{Expérimentations CFLP}
+\label{CFLP}
+\end{table}
+
+On obtient effectivement des bornes d'une très bonne qualité, mais en un temps significativement plus long, ce qui limite l’agressivité avec laquelle on pourra utiliser cette relaxation.
+
+J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et temps de calcul. Mais la qualité de la relaxation devient pitoyable, de l'ordre de 60-80\%.
+
 \section*{Bibliographie}
+
+\begin{itemize}
+\item
 Sources des instances : http://www-eio.upc.es/~elena/sscplp/index.html.\\
+\item
+Pour l'heuristique de Delmaire : "Comparing New Heuristics for the Pure Integer Capacitated Plant Location Problem" par Hugues Delmaire, Maruja Ortega, Juan A. D iaz, Elena Fernandez 
+\end{itemize}
 
 \end{document}

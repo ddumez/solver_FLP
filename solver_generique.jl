@@ -2,11 +2,11 @@ using JuMP
 
 #pour résoudre avec GLPK
 #using GLPKMathProgInterface
-#using GLPK
+using GLPK
 
 #pour resoudre avec CPLEX
 # export LD_LIBRARY_PATH="/user/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
-using CPLEX
+#using CPLEX
 
 #pour resoudre avec Mosek
 #using Mosek
@@ -91,7 +91,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
 
     #extraction des résultats
     println("z = : ", getobjectivevalue(mSSCFLP))
-#=    for i = 1:nbClients
+    for i = 1:nbClients
         for j = 1:nbDepos
             print(getvalue(y[i,j])," ")
         end
@@ -100,7 +100,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     println("\n")
     for j = 1:nbDepos
         print(getvalue(x[j])," ")
-    end =#
+    end
     println("\n\n")
 
 end

@@ -2,7 +2,7 @@ function contruit()
 
 #fichier a utiliser
 nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33] #nom des fichiers d'instances
- #valeur des solutions optimale (sauf pour 0)
+#valeur des solutions optimale (sauf pour 0)
 zopt = Dict{Integer,Integer}(0 => 1, 1 => 2014, 2 => 4251, 3 => 6051, 6 => 2269, 7 => 4366, 9 => 2480, 10 => 23112, 13 => 3760, 26 => 4448, 30 => 10816, 31 => 4466, 33 => 39463)
 
 for nom in nomfile
@@ -73,7 +73,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
         end
     end
     ordre = triDelta(delta, ordre)     #tri des clients par delta pour les facilite
-
+tic()
     #initialisation des ensembles
     Orest = Set{Int64}(); #facilite restantes
     Crest = Set{Int64}(); #clients restant
@@ -135,9 +135,10 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     end
 
     #calcul de la valeur de la solution
+    println(toc())
     z = sum(ouverture[j] * x[j] + sum( y[i,j] * association[i,j] for i=1:nbClients ) for j=1:nbDepos)
     println("z = : ", z)
-    println("diférence proportioenlle avec la solution optimale : ", ((z*100)/zopt[nom]) -100 )
+    println("différence proportionelle avec la solution optimale : ", ((z*100)/zopt[nom]) -100 )
     for i = 1:nbClients
         for j = 1:nbDepos
             print(y[i,j]," ")

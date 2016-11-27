@@ -14,6 +14,9 @@ function relaxe()
 
 #fichier a utiliser
 nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33]
+#valeur des solutions optimale (sauf pour 0)
+zopt = Dict{Integer,Integer}(0 => 1, 1 => 2014, 2 => 4251, 3 => 6051, 6 => 2269, 7 => 4366, 9 => 2480, 10 => 23112, 13 => 3760, 26 => 4448, 30 => 10816, 31 => 4466, 33 => 39463)
+
 
 for nom in nomfile
     #lecture des donnees
@@ -22,7 +25,7 @@ for nom in nomfile
     nbClients = parse(Int64, tmp[1])::Int64
     nbDepos = parse(Int64, tmp[2])::Int64
 println("(",nbClients,";",nbDepos,") : p$(nom)")
-    
+
     association = fill(1.0, (nbClients,nbDepos)) #cout d'association
     for i = 1:nbClients
         tmp = split(readline(f)," ")::Array
@@ -57,12 +60,14 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     end
 
     #declaration
-    mSSCFLP = Model(solver=GLPKSolverLP())::Model #pour resoudre avec GLPK
+    #mSSCFLP = Model(solver=GLPKSolverLP())::Model #pour resoudre avec GLPK
+    mSSCFLP = Model(solver=GLPKSolverMIP())::Model #pour resoudre avec GLPK le CFLP et UFLP
     #mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
     #mSSCFLP = Model(solver=MosekSolver())::Model #pour resoudre avec Mosek
 
     #variables
-    @variable(mSSCFLP, x[1:nbDepos] >= 0)
+    #@variable(mSSCFLP, x[1:nbDepos] >= 0)
+    @variable(mSSCFLP, x[1:nbDepos], Bin) #type pour le CFLP et UFLP
     @variable(mSSCFLP, y[1:nbClients,1:nbDepos] >= 0)
 
     for j=1:nbDepos
@@ -78,6 +83,9 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     #contraintes relaxe
     for j = 1:nbDepos
         @constraint(mSSCFLP, sum(y[i,j] * demande[i] for i=1:nbClients) <= capacite[j]*x[j])
+        #=for i = 1:nbClients #pour le UFLP
+            @constraint(mSSCFLP, y[i,j] <= x[j])
+        end=#
     end
     for i = 1:nbClients
         @constraint(mSSCFLP, sum(y[i,j] for j=1:nbDepos) == 1)
@@ -91,6 +99,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
 
     #extraction des résultats
     println("z = : ", getobjectivevalue(mSSCFLP))
+    println("différence proportionelle avec la solution optimale : ", 100 - ((getobjectivevalue(mSSCFLP)*100)/zopt[nom]) )
 #=    for i = 1:nbClients
         for j = 1:nbDepos
             print(getvalue(y[i,j])," ")
@@ -100,7 +109,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     println("\n")
     for j = 1:nbDepos
         print(getvalue(x[j])," ")
-    end =#
+    end=#
     println("\n\n")
 
 end
