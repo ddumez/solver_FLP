@@ -253,7 +253,48 @@ Au vu de ces remarque j'ai expérimenté la relaxation en CFLP :
 
 On obtient effectivement des bornes d'une très bonne qualité, mais en un temps significativement plus long, ce qui limite l’agressivité avec laquelle on pourra utiliser cette relaxation.
 
-J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et temps de calcul. Mais la qualité de la relaxation devient pitoyable, de l'ordre de 60-80\%.
+J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et temps de calcul. Mais la qualité de la relaxation devient pitoyable, de l'ordre de 60-80\%.\\
+
+Dans l'artice de Kaj Holmberg \& co il est fait référence de l’amélioration de la qualité de la borne duale obtenue par relaxation linéaire en ajoutant des contraintes redondantes.
+J'ai donc testé la relaxation du SSCFLP en cette modélisation, ou la contrainte 3 a été ajouté :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall j \in J : \sum \limits_{i \in I} y_{ij} w_{ij} \leqslant s_j x_j & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
+ \forall i \in I : \forall j \in J : y_{ij} - x_{j} \leqslant 0 & & \text{ (3)} \\
+ \forall j \in J : x_j \in \left[ 0;1 \right] \land \forall i \in I : y_{ij} \in \left[ 0;1 \right]
+\end{align*}
+~\\
+\begin{table}[!h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+  \hline
+  instance & type & \% de coût inférieur & temps GLPK & temps Mosek & temps CPLEX \\
+  \hline
+	p1 & normale & 10.52 & 0.0037 & 0.0174 & 0.0078 \\
+	p2 & ++connexion & 6.01 & 0.0033 & 0.0114 & 0.0337 \\
+	p3 & ++ouverture &  6.35 & 0.0039 & 0.0227 & 0.0318 \\
+	p6 & - - capacité & 8.16 & 0.0035 & 0.0347 & 0.0131 \\
+  \hline
+	p7 & normale & 4.94 & 0.0096 & 0.0645 & 0.0696 \\
+	p13 & ++connexion & 4.85 & 0.0449 & 0.0815 & 0.0397 \\
+	p10 & ++ouverture & 1.25 & 0.0084 & 0.0571 & 0.0175 \\
+	p9 & - - capacité & 7.29 & 0.0099 & 0.0581 & 0.0371 \\
+  \hline	
+	p26 & normale & 5.29 & 0.0312 & 0.1034 & 0.0779 \\
+	p30 & ++connexion & 5.30 & 0.0330 & 0.2074 & 0.1007 \\
+	p33 & ++ouverture & 2.27 & 0.0284 & 0.0571 & 0.0222 \\
+	p31 & - - capacité & 5.58 & 0.0305 & 0.0616 & 0.0478 \\
+  \hline
+\end{tabular}
+\caption{Expérimentations relaxation linéaire sur-contraint}
+\label{surcontraint}
+\end{table}
+
+TODO expérimenter sur les temps d’exécutions !!!!!\\
+Déjà la qualité est toujours meilleure mais généralement la différence est très petite.
+l'ajout de la contrainte propose par sune disant que la somme des capacité doit être supérieure à la demande totale n’améliore rien et ralenti tout.
 
 \section*{Bibliographie}
 
@@ -262,6 +303,8 @@ J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et
 Sources des instances : http://www-eio.upc.es/~elena/sscplp/index.html.\\
 \item
 Pour l'heuristique de Delmaire : "Comparing New Heuristics for the Pure Integer Capacitated Plant Location Problem" par Hugues Delmaire, Maruja Ortega, Juan A. D iaz, Elena Fernandez 
+\item
+"An exact algorithm for the capacitated facility location problems with single sourcing" par Kaj Holmberg ,Mikael Ronnqvist , Di Yuan
 \end{itemize}
 
 \end{document}
