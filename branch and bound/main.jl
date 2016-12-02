@@ -26,6 +26,7 @@ end
 include("utilitaires.jl")
 include("relaxation.jl")
 include("construction.jl")
+include("recursif.jl")
 
 
 data = instance(0, 0, [], [], [], [], [], [])
@@ -40,28 +41,14 @@ initialise(data, sol) #on initialise la solution a une solution vide
 conctuctinitsol(sol, data) #on construit une premiere solution initiale avec l'heuristique de homberg
 relaxinit(mSSCFLP, data, solduale) #on calcule la relaxation continue
 
-println("solution relaxe : ", solduale.z)
-for j = 1:data.nbDepos
-	print(getvalue(solduale.x[j]))
-end
-print("\n")
-for i = 1:data.nbClients
-	for j = 1:data.nbDepos
-		print(getvalue(solduale.y[i,j]))
-	end
-	print("\n")
-end
+sol = branchandbound(mSSCFLP, sol, solduale, data, data.nbDepos + data.nbClients)
 
-completeRelax(mSSCFLP, data, solduale, sol, data.nbDepos+2)
-
-println("solution relaxe : ", solduale.z)
-for j = 1:data.nbDepos
-	print(getvalue(solduale.x[j]))
+println("Valeur de la solution : ",sol.z)
+print("Facilites ouvertes : ")
+for j=1:data.nbDepos
+	print(sol.x[j]," ");
 end
-print("\n")
-for i = 1:data.nbClients
-	for j = 1:data.nbDepos
-		print(getvalue(solduale.y[i,j]))
-	end
-	print("\n")
+print("\nAssociation client/depos")
+for i=1:data.nbClients
+	print(sol.y[i]," ")
 end
