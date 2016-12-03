@@ -2,11 +2,11 @@ using JuMP
 
 #pour résoudre avec GLPK
 #using GLPKMathProgInterface
-using GLPK
+#using GLPK
 
 #pour resoudre avec CPLEX
-# export LD_LIBRARY_PATH="/user/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
-#using CPLEX
+# export LD_LIBRARY_PATH="/usr/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
+using CPLEX
 
 #pour resoudre avec Mosek
 #using Mosek
@@ -93,13 +93,21 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     println("z = : ", getobjectivevalue(mSSCFLP))
     for i = 1:nbClients
         for j = 1:nbDepos
-            print(getvalue(y[i,j])," ")
+            if ( 0.5 <= getvalue(y[i,j]))
+                print("1 ")
+            else
+                print("0 ")
+            end 
         end
         print("\n")
     end
     println("\n")
     for j = 1:nbDepos
-        print(getvalue(x[j])," ")
+        if (0.5 <= getvalue(x[j]))
+            print("1 ")
+        else
+            print("0 ")
+        end
     end
     println("\n\n")
 

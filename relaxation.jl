@@ -1,11 +1,12 @@
 using JuMP
 
 #pour résoudre avec GLPK
-using GLPKMathProgInterface
-using GLPK
+#using GLPKMathProgInterface
+#using GLPK
 
 #pour resoudre avec CPLEX
-#using CPLEX
+# export LD_LIBRARY_PATH="/usr/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
+using CPLEX
 
 #pour resoudre avec Mosek
 #using Mosek
@@ -61,13 +62,13 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
 
     #declaration
     #mSSCFLP = Model(solver=GLPKSolverLP())::Model #pour resoudre avec GLPK
-    mSSCFLP = Model(solver=GLPKSolverMIP())::Model #pour resoudre avec GLPK le CFLP et UFLP
-    #mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
+    #mSSCFLP = Model(solver=GLPKSolverMIP())::Model #pour resoudre avec GLPK le CFLP et UFLP
+    mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
     #mSSCFLP = Model(solver=MosekSolver())::Model #pour resoudre avec Mosek
 
     #variables
-    #@variable(mSSCFLP, x[1:nbDepos] >= 0)
-    @variable(mSSCFLP, x[1:nbDepos], Bin) #type pour le CFLP et UFLP
+    @variable(mSSCFLP, x[1:nbDepos] >= 0)
+    #@variable(mSSCFLP, x[1:nbDepos], Bin) #type pour le CFLP et UFLP
     @variable(mSSCFLP, y[1:nbClients,1:nbDepos] >= 0)
 
     for j=1:nbDepos
@@ -83,13 +84,14 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
     #contraintes relaxe
     for j = 1:nbDepos
         @constraint(mSSCFLP, sum(y[i,j] * demande[i] for i=1:nbClients) <= capacite[j]*x[j])
-        #=for i = 1:nbClients #pour le UFLP
+        for i = 1:nbClients #pour le UFLP ou la contrainte redondante de Holmberg
             @constraint(mSSCFLP, y[i,j] <= x[j])
-        end=#
+        end
     end
     for i = 1:nbClients
         @constraint(mSSCFLP, sum(y[i,j] for j=1:nbDepos) == 1)
     end
+
 
 #test : affichage du modele
 #println(mSSCFLP)

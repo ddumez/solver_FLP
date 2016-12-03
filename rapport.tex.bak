@@ -18,7 +18,7 @@ Nous allons ici nous intéresser aux problèmes de FLP. Le but étant de résoud
 
 \section{Problèmes étudiés}
 
-La première, et plus simple, version de notre problème est le UFLP. C'est à dire la localisation de service sans capacité. On se permet alors de supposer qu'un dépos peux alimenter un nombre infini de clients, on ne quantifie donc pas la demande des clients.
+La première, et plus simple, version de notre problème est le UFLP. C'est à dire la localisation de service sans capacité. On se permet alors de supposer qu'un dépôts peux alimenter un nombre infini de clients, on ne quantifie donc pas la demande des clients.
 
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
@@ -28,11 +28,11 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} \geqslant 1 & & \text{ (2)} \\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
 \end{align*}
-Les $x_j$ représentent le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est appareillé avec le dépos j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client-dépos $c_{ij}$.
+Les $x_j$ représentent le fait que la facilité $j$ est ouverte et les $y_{ij}$ le fait que le client i est appareillé avec le dépôts j. Les données sont les coûts d'ouvertures $f_j$ et les coûts d'association client-dépôts $c_{ij}$.
 
-La contrainte 1 exprime le fait que le dépos j peux alimenter le client i seulement si il est ouvert. La deuxième exprime le fait que tout les clients doivent être couvert.\\
+La contrainte 1 exprime le fait que le dépôts j peux alimenter le client i seulement si il est ouvert. La deuxième exprime le fait que tout les clients doivent être couvert.\\
 
-Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépos ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépos n'ont pas forcement la même capacité et les clients des quantités de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarquer que l'on n'interdit pas qu'un client ait sa demande fragmenté entre plusieurs facilitées.
+Dans une deuxième version du problème, CFLP, on prend en compte des capacités et des demandes. C'est à dire que les dépôts ont une capacité limité et que les clients ont une demande quantifié. De plus il faut remarquer que tous les dépôts n'ont pas forcement la même capacité et les clients des quantités de demandes différentes, même si tout cela concerne toujours le même produit. Enfin il faut remarquer que l'on n'interdit pas qu'un client ait sa demande fragmenté entre plusieurs facilitées.
 
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
@@ -42,11 +42,11 @@ s.c.
  \forall i \in I : \sum \limits_{j \in J} y_{ij} = w_i & & \text{ (2)}\\
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I : y_{ij} \in \mathbb{R}^{+} 
 \end{align*}
-Maintenant que des quantités entre en jeux, les variables $y_{ij}$ expriment la quantité fournie au client $i$ par le dépos $j$. Les données supplémentaires sont les capacités $s_j$ des dépos et les demandes $w_i$ des clients. Il faut aussi noter que les coûts d'associations sont maintenant exprimé en prix par unité transporté.
+Maintenant que des quantités entre en jeux, les variables $y_{ij}$ expriment la quantité fournie au client $i$ par le dépôts $j$. Les données supplémentaires sont les capacités $s_j$ des dépôts et les demandes $w_i$ des clients. Il faut aussi noter que les coûts d'associations sont maintenant exprimé en prix par unité transporté.
 
-La contrainte 1 représente alors le fait qu'un dépos ne peut fournir plus que sa capacité, si il n'est pas ouvert sa capacité est nécessairement de 0. Et la seconde force la satisfaction complète de la demande de tous les clients.
+La contrainte 1 représente alors le fait qu'un dépôts ne peut fournir plus que sa capacité, si il n'est pas ouvert sa capacité est nécessairement de 0. Et la seconde force la satisfaction complète de la demande de tous les clients.
 
-La dernière version du problème, celle à laquelle on s'intéresse, le SSCFLP, ajoute la contrainte qu'un client ne peut être servis que par un unique dépos.
+La dernière version du problème, celle à laquelle on s'intéresse, le SSCFLP, ajoute la contrainte qu'un client ne peut être servis que par un unique dépôts.
 Le modèle de programmation linéaire est :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
 s.c.
@@ -57,7 +57,7 @@ s.c.
 \end{align*}
 Maintenant que les quantités demandés par les clients ne peuvent plus êtres fractionnés des booléens suffisent de nouveau pour les $y_{ij}$ et exprime de nouveau l'association du client $i$ à la facilité $j$. De plus aucune donné supplémentaire n'est nécessaire.
 
-La contrainte 1 exprime toujours le fait qu'un dépos ne peux livrer plus que sa capacité. Et la contrainte 2 impose le fait que chaque client doit être livré par un unique dépos.\\
+La contrainte 1 exprime toujours le fait qu'un dépôts ne peux livrer plus que sa capacité. Et la contrainte 2 impose le fait que chaque client doit être livré par un unique dépôts.\\
 
 On remarque alors que le programme de l'UFLP peux être re-écrit si les coûts d'association sont non-négatif :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
@@ -68,7 +68,7 @@ s.c.
  \forall j \in J : x_j \in \{0;1\} \land \forall i \in I  : y_{ij} \in \{0;1\} 
 \end{align*}
 En effet, la fonction d’objectif étant en minimisation, la solution optimale ne couvrira jamais, sauf dégénérescence causée par coûts d’appareillages nul, un client 2 fois. On peut alors dire que la contrainte est satisfaite si et seulement si chaque client est couvert une unique fois.\\
-De plus,on peut re-écrire la contrainte qui force un dépos utilisé à être ouvert pour faire apparaître plus clairement la relaxation du SSCFLP en UFLP :\\
+De plus,on peut re-écrire la contrainte qui force un dépôts utilisé à être ouvert pour faire apparaître plus clairement la relaxation du SSCFLP en UFLP :\\
 $min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
 s.c.
 \begin{align*}
@@ -140,7 +140,7 @@ Je me suis tourné vers les 2 autres solveurs interfacé avec JuMP qui propose l
 \label{tempsCPLEX}
 \end{table}
 
-On prend comme étalon les instances dites normale, ne présentant à priori aucune particularité. On peut alors supposer que les instances avec des grand coûts de connexions ou d'ouverture sont plus compliqué. Par contre on ne peut rien dire sur les instance concernant les petits dépos pas cher.\\
+On prend comme étalon les instances dites normale, ne présentant à priori aucune particularité. On peut alors supposer que les instances avec des grand coûts de connexions ou d'ouverture sont plus compliqué. Par contre on ne peut rien dire sur les instance concernant les petits dépôts pas cher.\\
 
 Je n'ai pas inclus les solutions fournie dans le dossier de rendu car CPLEX et Mosek donnent parfois des valeurs différente de 0 ou 1 à des variables binaires (elle le sont bien selon l'affichage de la modélisation). Mais ces imprécisions sont de l'ordre de $10^-10$ ou telles que des $-0$.
 
@@ -182,7 +182,7 @@ De manière grossière l'heuristique semble mieux fonctionner sur les instances 
 
 \subsection{Borne duale}
 
-Comme relaxation continue nous avons utilise la modélisation du CFLP auquel on a relâché la contrainte de type sur les variables désignant l’ouverture des dépos. C'est à dire que l'on peu ouvrir un dépos à moitié.\\
+Comme relaxation continue nous avons utilise la modélisation du CFLP auquel on a relâché la contrainte de type sur les variables désignant l’ouverture des dépôts. C'est à dire que l'on peu ouvrir un dépôts à moitié.\\
 
 \begin{table}[!h]
 \centering
@@ -215,11 +215,11 @@ Premièrement on peu encore noté que les temps d’exécutions restent petit do
 La qualité de la relaxation diffère significativement entre les types d'instances donc on peu les étudiés séparément :
 \begin{itemize}
 \item
-les instances normales font parties de celle sur lequel la relaxation est de moins bonne qualité. Quand on observe les solutions trouve on remarque que la solution relâché a tendance a ne pas ouvrir un dépos au profit d'autre partiellement ouvert. Et au contraire la relaxation profite peu de la distribution de la demande sur deux dépos. Au vu de ces résultat la possibilité de relâcher de SSCFLP en CFLP pourrai corriger ce problème si il ne se déplace pas vers  la distribution des demande entre les dépos.
+les instances normales font parties de celle sur lequel la relaxation est de moins bonne qualité. Quand on observe les solutions trouve on remarque que la solution relâché a tendance a ne pas ouvrir un dépôts au profit d'autre partiellement ouvert. Et au contraire la relaxation profite peu de la distribution de la demande sur deux dépôts. Au vu de ces résultat la possibilité de relâcher de SSCFLP en CFLP pourrai corriger ce problème si il ne se déplace pas vers  la distribution des demande entre les dépôts.
 \item
 sur les instances à fort coût de connexion la relaxation est de qualité moyenne. Mais en réalité si on observe les résultats, ils ont la même forme que pour les instances normales. Sauf qu'ici la part des coûts engendrés par les connexions est plus importante donc, vu que l'on compare relativement, la relaxation semble de meilleure qualité.
 \item
-sur les instances présentant de grands coûts d'ouvertures la relaxation est généralement de très bonne qualité. La solution proposé utilise alors plus la distribution de la demande entre plusieurs dépos, et les services ouvert sont à peu près les même mais pas forcement ouvert en entier. Mais étant donne que la plupart des coûts des générés par l’ouverture des dépos ce doit surtout être la relaxation sur l’ouverture des dépos qui diminue la qualité. Mais la différence relative reste faible car les solutions optimales restent très chères.
+sur les instances présentant de grands coûts d'ouvertures la relaxation est généralement de très bonne qualité. La solution proposé utilise alors plus la distribution de la demande entre plusieurs dépôts, et les services ouvert sont à peu près les même mais pas forcement ouvert en entier. Mais étant donne que la plupart des coûts des générés par l’ouverture des dépôts ce doit surtout être la relaxation sur l’ouverture des dépôts qui diminue la qualité. Mais la différence relative reste faible car les solutions optimales restent très chères.
 \item
 enfin les instances avec des facilités à faibles capacités sont mal approximé par relaxation. Pour ces instances on retrouve les même problème qu'avec les instances normales. 
 \end{itemize}
@@ -253,32 +253,49 @@ Au vu de ces remarque j'ai expérimenté la relaxation en CFLP :
 
 On obtient effectivement des bornes d'une très bonne qualité, mais en un temps significativement plus long, ce qui limite l’agressivité avec laquelle on pourra utiliser cette relaxation.
 
-J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et temps de calcul.
+J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et temps de calcul. Mais la qualité de la relaxation devient pitoyable, de l'ordre de 60-80\%.\\
+
+Dans l'artice de Kaj Holmberg \& co il est fait référence de l’amélioration de la qualité de la borne duale obtenue par relaxation linéaire en ajoutant des contraintes redondantes.
+J'ai donc testé la relaxation du SSCFLP en cette modélisation, ou la contrainte 3 a été ajouté :\\
+$min z = \sum \limits_{j \in J} f_j x_j + \sum \limits_{i \in I} \sum \limits_{j \in J} c_{ij} y_{ij}$\\
+s.c.
+\begin{align*}
+ \forall j \in J : \sum \limits_{i \in I} y_{ij} w_{ij} \leqslant s_j x_j & & \text{ (1)} \\
+ \forall i \in I : \sum \limits_{j \in J} y_{ij} = 1 & & \text{ (2)} \\
+ \forall i \in I : \forall j \in J : y_{ij} - x_{j} \leqslant 0 & & \text{ (3)} \\
+ \forall j \in J : x_j \in \left[ 0;1 \right] \land \forall i \in I : y_{ij} \in \left[ 0;1 \right]
+\end{align*}
+~\\
 \begin{table}[!h]
 \centering
 \begin{tabular}{|c|c|c|c|c|c|}
   \hline
   instance & type & \% de coût inférieur & temps GLPK & temps Mosek & temps CPLEX \\
   \hline
-	p1 & normale & 10.08 & 0.0019 & 0.0174 & 0.0078 \\
-	p2 & ++connexion & 4.48 & 0.0046 & 0.0114 & 0.0337 \\
-	p3 & ++ouverture & 1.10 & 0.0051 & 0.0227 & 0.0318 \\
-	p6 & - - capacité & 4.24 & 0.0131 & 0.0347 & 0.0131 \\
+	p1 & normale & 10.52 & 0.0027 & 0.0079 & 0.0078 \\
+	p2 & ++connexion & 6.01 & 0.0025 & 0.0086 & 0.0337 \\
+	p3 & ++ouverture &  6.35 & 0.0028 & 0.0092 & 0.0318 \\
+	p6 & - - capacité & 8.16 & 0.0025 & 0.0077 & 0.0131 \\
   \hline
-	p7 & normale & 4.13 & 0.0063 & 0.0645 & 0.0696 \\
-	p13 & ++connexion & 1.59 & 0.0505 & 0.0815 & 0.0397 \\
-	p10 & ++ouverture & 0.50 & 0.0056 & 0.0571 & 0.0175 \\
-	p9 & - - capacité & 5.01 & 0.0165 & 0.0581 & 0.0371 \\
+	p7 & normale & 4.94 & 0.0069 & 0.0150 & 0.0696 \\
+	p13 & ++connexion & 4.85 & 0.0088 & 0.0815 & 0.0397 \\
+	p10 & ++ouverture & 1.25 & 0.0060 & 0.0571 & 0.0175 \\
+	p9 & - - capacité & 7.29 & 0.0070 & 0.0581 & 0.0371 \\
   \hline	
-	p26 & normale & 2.71 & 0.0743 & 0.1034 & 0.0779 \\
-	p30 & ++connexion & 3.50 & 0.1169 & 0.2074 & 0.1007 \\
-	p33 & ++ouverture & 0.55 & 0.0191 & 0.0571 & 0.0222 \\
-	p31 & - - capacité & 5.03 & 0.0354 & 0.0616 & 0.0478 \\
+	p26 & normale & 5.29 & 0.0246 & 0.1034 & 0.0779 \\
+	p30 & ++connexion & 5.30 & 0.0257 & 0.2074 & 0.1007 \\
+	p33 & ++ouverture & 2.27 & 0.0229 & 0.0571 & 0.0222 \\
+	p31 & - - capacité & 5.58 & 0.0280 & 0.0616 & 0.0478 \\
   \hline
 \end{tabular}
-\caption{Expérimentations UFLP}
-\label{UFLP}
+\caption{Expérimentations relaxation linéaire sur-contraint}
+\label{surcontraint}
 \end{table}
+
+TODO expérimenter sur les temps d’exécutions !!!!!\\
+Déjà la qualité est toujours meilleure mais généralement la différence est très petite.
+l'ajout de la contrainte propose par sune disant que la somme des capacité doit être supérieure à la demande totale n’améliore rien et ralenti tout.
+
 \section*{Bibliographie}
 
 \begin{itemize}
@@ -286,6 +303,8 @@ J'ai donc essaye la relaxation en UFLP pour avoir un compromis entre qualité et
 Sources des instances : http://www-eio.upc.es/~elena/sscplp/index.html.\\
 \item
 Pour l'heuristique de Delmaire : "Comparing New Heuristics for the Pure Integer Capacitated Plant Location Problem" par Hugues Delmaire, Maruja Ortega, Juan A. D iaz, Elena Fernandez 
+\item
+"An exact algorithm for the capacitated facility location problems with single sourcing" par Kaj Holmberg ,Mikael Ronnqvist , Di Yuan
 \end{itemize}
 
 \end{document}
