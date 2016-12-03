@@ -6,10 +6,10 @@ using JuMP
 
 #pour resoudre avec CPLEX
 # export LD_LIBRARY_PATH="/usr/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
-using CPLEX
+#using CPLEX
 
 #pour resoudre avec Mosek
-#using Mosek
+using Mosek
 
 function generique()
 
@@ -65,8 +65,8 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
 
     #declaration
     #mSSCFLP = Model(solver=GLPKSolverMIP())::Model #pour resoudre avec GLPK
-    mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
-    #mSSCFLP = Model(solver=MosekSolver())::Model #pour resoudre avec Mosek
+    #mSSCFLP = Model(solver=CplexSolver())::Model #pour resoudre avec CPLEX
+    mSSCFLP = Model(solver=MosekSolver())::Model #pour resoudre avec Mosek
 
     #variables
     @variable(mSSCFLP, x[1:nbDepos], Bin) #x[i] = 1 ssi le depos i est ouvert
@@ -97,7 +97,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
                 print("1 ")
             else
                 print("0 ")
-            end 
+            end
         end
         print("\n")
     end

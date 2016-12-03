@@ -1,5 +1,6 @@
 type solution
 	x #facilite ouvertes
+	capacite #capacite restantes des depos, 0 si non ouvert mettre a jour la constructionsi utilise
 	y #services associe, tableau d'entier car SS, -1 si pas associe
 	z::Int64 #valeur de la solution
 end
@@ -25,6 +26,7 @@ end
 function initialise(data::instance, sol::solution)
 	sol.y = [ -1 for i=1:data.nbClients ]
 	sol.x = [0 for j=1:data.nbDepos]
+	sol.capacite = [0 for j=1:data.nbDepos]
 	sol.z = 0
 end
 
@@ -95,4 +97,16 @@ function triDeltaRec(delta::Array{Int64,2})
 end
 function triDelta(delta::Array{Int64,2}, ordre::Array{Int64,2})
     mapslices( triDeltaRec(delta) , ordre, [2])
+end
+
+#recopie une solution (les deux doivent etre initialise)
+function recopie(sol1::solution, sol2::solution)
+	for j=1:size(sol1.x)[1]
+		sol2.x[j] = sol1.x[j]
+		sol2.capacite[j] = sol1.capacite[j]
+	end
+	for i=1:size(sol1.y)[1]
+		sol2.y[i] = sol1.y[i]
+	end
+	sol2.z = sol1.z
 end

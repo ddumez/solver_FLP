@@ -1,26 +1,26 @@
 using JuMP
 
 #pour résoudre avec GLPK
-using GLPKMathProgInterface
-using GLPK
+#using GLPKMathProgInterface
+#using GLPK
 
 #pour resoudre avec CPLEX
 # export LD_LIBRARY_PATH="/usr/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
 #using CPLEX
 
 #pour resoudre avec Mosek
-#using Mosek
+using Mosek
 
 function solverMip()
-    return Model(solver=GLPKSolverMIP())::Model
+    #return Model(solver=GLPKSolverMIP())::Model
     #return Model(solver=CplexSolver())::Model
-    #return Model(solver=MosekSolver())::Model
+    return Model(solver=MosekSolver())::Model
 end
 
 function solverLP()
-	return Model(solver=GLPKSolverLP())::Model
+	#return Model(solver=GLPKSolverLP())::Model
     #return Model(solver=CplexSolver())::Model
-    #return Model(solver=MosekSolver())::Model
+    return Model(solver=MosekSolver())::Model
 end
 
 include("utilitaires.jl")
@@ -30,25 +30,43 @@ include("recursif.jl")
 
 
 data = instance(0, 0, [], [], [], [], [], [])
-sol = solution([], [], 0)
+sol = solution([], [], [], 0)
+best = solution([], [], [], 0)
+
 solduale = solutionrelache([], [], [], 0.0)
-nomfile = String("./../instances/p0.txt")
+nomfile = String("./../instances/p1.txt")
 mSSCFLP = solverLP()
+lowerbound = [] #pour les constrainte de borne sur les variables du LP
+upperbound = []
 
 
 lecteur(nomfile, data) #on lit le fichier de donne
 initialise(data, sol) #on initialise la solution a une solution vide
-conctuctinitsol(sol, data) #on construit une premiere solution initiale avec l'heuristique de homberg
-relaxinit(mSSCFLP, data, solduale) #on calcule la relaxation continue
+initialise(data, best)
+conctuctinitsol(best, data) #on construit une premiere solution initiale avec l'heuristique de homberg
+relaxinit(mSSCFLP, data, solduale, lowerbound, upperbound) #on calcule la relaxation continue
 
-sol = branchandbound(mSSCFLP, sol, solduale, data, data.nbDepos + data.nbClients)
 
-println("Valeur de la solution : ",sol.z)
+println("Valeur de la solution construite : ", best.z)
 print("Facilites ouvertes : ")
 for j=1:data.nbDepos
-	print(sol.x[j]," ");
+	print(best.x[j]," ");
 end
-print("\nAssociation client/depos")
+print("\nAssociation client/depos : ")
 for i=1:data.nbClients
-	print(sol.y[i]," ")
+	print(best.y[i]," ")
 end
+print("\n\n")
+
+branchandbound(mSSCFLP, sol, solduale, data, 1, best, lowerbound, upperbound)
+
+println("Valeur de la solution : ",best.z)
+print("Facilites ouvertes : ")
+for j=1:data.nbDepos
+	print(best.x[j]," ");
+end
+print("\nAssociation client/depos : ")
+for i=1:data.nbClients
+	print(best.y[i]," ")
+end
+print("\n\n")

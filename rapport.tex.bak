@@ -272,29 +272,29 @@ s.c.
   \hline
   instance & type & \% de coût inférieur & temps GLPK & temps Mosek & temps CPLEX \\
   \hline
-	p1 & normale & 10.52 & 0.0027 & 0.0079 & 0.0078 \\
-	p2 & ++connexion & 6.01 & 0.0025 & 0.0086 & 0.0337 \\
-	p3 & ++ouverture &  6.35 & 0.0028 & 0.0092 & 0.0318 \\
-	p6 & - - capacité & 8.16 & 0.0025 & 0.0077 & 0.0131 \\
+	p1 & normale & 10.52 & 0.0027 & 0.0079 & 0.0011 \\
+	p2 & ++connexion & 6.01 & 0.0025 & 0.0086 & 0.0010 \\
+	p3 & ++ouverture &  6.35 & 0.0028 & 0.0092 & 0.0010 \\
+	p6 & - - capacité & 8.16 & 0.0025 & 0.0077 & 0.0009 \\
   \hline
-	p7 & normale & 4.94 & 0.0069 & 0.0150 & 0.0696 \\
-	p13 & ++connexion & 4.85 & 0.0088 & 0.0815 & 0.0397 \\
-	p10 & ++ouverture & 1.25 & 0.0060 & 0.0571 & 0.0175 \\
-	p9 & - - capacité & 7.29 & 0.0070 & 0.0581 & 0.0371 \\
+	p7 & normale & 4.94 & 0.0069 & 0.0150 & 0.0021 \\
+	p13 & ++connexion & 4.85 & 0.0088 & 0.0136 & 0.0024 \\
+	p10 & ++ouverture & 1.25 & 0.0060 & 0.0150 & 0.0019 \\
+	p9 & - - capacité & 7.29 & 0.0070 & 0.0111 & 0.0016 \\
   \hline	
-	p26 & normale & 5.29 & 0.0246 & 0.1034 & 0.0779 \\
-	p30 & ++connexion & 5.30 & 0.0257 & 0.2074 & 0.1007 \\
-	p33 & ++ouverture & 2.27 & 0.0229 & 0.0571 & 0.0222 \\
-	p31 & - - capacité & 5.58 & 0.0280 & 0.0616 & 0.0478 \\
+	p26 & normale & 5.29 & 0.0246 & 0.0255 & 0.0043 \\
+	p30 & ++connexion & 5.30 & 0.0257 & 0.0240 & 0.0038 \\
+	p33 & ++ouverture & 2.27 & 0.0229 & 0.0286 & 0.0046 \\
+	p31 & - - capacité & 5.58 & 0.0280 & 0.0454 & 0.0052 \\
   \hline
 \end{tabular}
 \caption{Expérimentations relaxation linéaire sur-contraint}
 \label{surcontraint}
 \end{table}
 
-TODO expérimenter sur les temps d’exécutions !!!!!\\
-Déjà la qualité est toujours meilleure mais généralement la différence est très petite.
-l'ajout de la contrainte propose par sune disant que la somme des capacité doit être supérieure à la demande totale n’améliore rien et ralenti tout.
+La qualité est toujours meilleure mais généralement la différence est très petite. Par contre la résolution est plus lente mais cela reste raisonnable donc on peut envisager l'utilisation de ces contraintes.\\
+
+Au contraire l'ajout de la contrainte propose par sune, disant que la somme des capacité doit être supérieure à la demande totale, n’améliore rien et ralenti tout.
 
 \section*{Bibliographie}
 
