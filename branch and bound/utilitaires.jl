@@ -110,3 +110,22 @@ function recopie(sol1::solution, sol2::solution)
 	end
 	sol2.z = sol1.z
 end
+
+#reinitialise tout ce qui ce trouve après l'indice k compris
+function reinit(sol::solution, k::Int64, data::instance)
+	for i=max(1, k - data.nbDepos) : data.nbClients
+		if (-1 != sol.y[i])
+			sol.z = sol.z - data.association[i, sol.y[i]]
+			sol.capacite[sol.y[i]] = sol.capacite[sol.y[i]] + data.demande[i]
+			sol.y[i] = -1
+		end
+	end
+
+	for j=k:data.nbDepos
+		if (1 == sol.x[j])
+			sol.x[j] = 0
+			sol.z = sol.z - data.ouverture[j]
+			sol.capacite[j] = 0
+		end
+	end
+end

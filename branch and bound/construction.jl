@@ -1,19 +1,7 @@
 function conctuctinitsol(sol::solution, data::instance)
     #initialisation des ensembles
-    Orest = Set{Int64}(); #facilite restantes
-    Crest = Set{Int64}(); #clients restant
-    O = Set{Int64}(); #facilite ouverte
-    C = Set{Int64}(); #client satisfait
-    totO = Set{Int64}(); #ensemble des sites
-    totC = Set{Int64}(); #ensemble des clients
-    for j=1:data.nbDepos
-        push!(Orest, j)
-        push!(totO, j)
-    end
-    for i=1:data.nbClients
-        push!(Crest, i)
-        push!(totC, i)
-    end
+    Orest = Set{Int64}(1:data.nbDepos); #facilite restantes
+    Crest = Set{Int64}(1:data.nbClients); #clients restants
 
     #initialisation des tableau
     clients = []
@@ -23,7 +11,7 @@ function conctuctinitsol(sol::solution, data::instance)
         push!(phi, 0.0)
     end
 
-    while ((O != totO) && (C != totC))
+    while ((Orest != Set{Int64}()) && (Crest != Set{Int64}()))
         #calcule le nombre de clients qui peut etre assigne a chaque service restant selon l'orde et les clients restant
         #calcule les valeur de phi
         for j in Orest
@@ -50,54 +38,83 @@ function conctuctinitsol(sol::solution, data::instance)
 
         #ajout dans la solution
         Orest = setdiff(Orest,Set{Int64}([jphimin])) #depos jphimin traite
-        O = union(O, Set{Int64}([jphimin])) #depos jphimin traite
         sol.x[jphimin] = 1 #on ouvre le depos jphimin
         sol.z = sol.z + data.ouverture[jphimin] #on compte le cout d'ouverture
+        sol.capacite[jphimin] = data.capacite[jphimin]
         for i = 1:size(clients[jphimin])[1]
             Crest = setdiff(Crest,Set{Int64}(clients[jphimin][i])) #client jphimin traite
-            C = union(C, Set{Int64}(clients[jphimin][i])) #client jphimin traite
             sol.y[clients[jphimin][i]] = jphimin #on associe le client i au depos jphimin
+            sol.capacite[jphimin] = sol.capacite[jphimin] - data.demande[clients[jphimin][i]]
             sol.z = sol.z + data.association[clients[jphimin][i], jphimin] #on compte le cout de connexion
         end
     end
 
+    return Crest == Set{Int64}() #si on a reussi s a construire une solution admissible
 end
 
-function completesol(sol::solution, data::instance, k::Int64)
-    #preparation de sol : remise a 0 des elements que l'on a pas fixe (au cas ou il l'etait)
-    for j=k:data.nbDepos
-        sol.x[j] = 0
-        sol.z = sol.z - data.ouverture[i]
-    end
-    for i=(k- data.nbDepos):data.nbClients
-        sol.z = sol.z - data.association[i, sol.y[i]]
-        sol.y[i] = 0
-    end
-
+function completesol(sol::solution, dataP::instance, k::Int64)
+println("solution initiale : ",sol)
     #initialisation des ensembles
     Orest = Set{Int64}(); #facilite restantes
-    Crest = Set{Int64}(); #clients restant
-    O = Set{Int64}(); #facilite ouverte
-    C = Set{Int64}(); #client satisfait
-    totO = Set{Int64}(); #ensemble des sites
-    totC = Set{Int64}(); #ensemble des clients
+    Crest = Set{Int64}( (max(k + 1 - dataP.nbDepos , 1)):dataP.nbClients) #clients restant
 
-    for j=1:data.nbDepos
-        if j > k 
+    #creation de l'ensemble de donne du sous-probleme
+    data = instance(dataP.nbClients, dataP.nbDepos, [], dataP.demande, [], [], [], [])
+    for j=1:min(k, dataP.nbDepos)
+        if (1 == sol.x[j])
+            push!(data.ouverture, 0) #il est deja ouvert donc deja paye
+            push!(data.capacite, sol.capacite[j])
             push!(Orest, j)
         else
-            push!(O, j)
+            push!(data.ouverture, Inf) #on s'interdit de l'ouvrir
+            push!(data.capacite, 0)
         end
-        push!(totO, j)
     end
-    for i=1:data.nbClients
-        if i > k - data.nbDepos
-            push!(Crest, i)
-        else
-            push!(C, i)
+    for j=(k+1):data.nbDepos
+        push!(data.ouverture, dataP.ouverture[j])
+        push!(data.capacite, dataP.capacite[j])
+        push!(Orest, j)
+    end
+    data.association = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #cout d'association
+    for i = 1:data.nbClients
+        for j = 1:data.nbDepos
+            if (j in Orest)
+                data.association[i,j] = dataP.association[i,j]
+            else
+                data.association[i,j] = 2^55 - 1
+            end
         end
-        push!(totC, i)
     end
+    data.delta = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #cout d'association
+    for i = 1:data.nbClients
+        #recherche de cmini
+        cmini = data.association[i,1]
+        for j = 1:data.nbDepos
+            if(data.association[i,j] < cmini)
+                cmini = data.association[i,j]
+            end
+        end
+        #calcul des delta
+        for j = 1:data.nbDepos
+            data.delta[i,j] = data.association[i,j] - cmini
+        end
+    end
+    data.ordre = collect(reshape(1:data.nbDepos*data.nbClients, data.nbDepos, data.nbClients))::Array
+    for j =1:data.nbDepos
+        for i=1:data.nbClients
+            data.ordre[j,i] = i
+        end
+    end
+    data.ordre = triDelta(data.delta, data.ordre)
+
+println("data.nbClients : ",data.nbClients)
+println("data.nbDepos : ",data.nbDepos)
+println("data.association : ",data.association)
+println("data.delta : ",data.delta)
+println("data.ouverture : ",data.ouverture)
+println("data.capacite : ",data.capacite)
+println("Orest : ",Orest)
+println("Crest : ",Crest)
 
     #initialisation des tableau
     clients = []
@@ -108,7 +125,7 @@ function completesol(sol::solution, data::instance, k::Int64)
     end
 
     #on utilise l'heuristique de la meme maniere mais avec un depart diferent
-    while ((O != totO) && (C != totC))
+    while ((Orest != Set{Int64}()) && (Crest != Set{Int64}()))
         #calcule le nombre de clients qui peut etre assigne a chaque service restant selon l'orde et les clients restant
         #calcule les valeur de phi
         for j in Orest
@@ -135,14 +152,20 @@ function completesol(sol::solution, data::instance, k::Int64)
 
         #ajout dans la solution
         Orest = setdiff(Orest,Set{Int64}([jphimin])) #depos jphimin traite
-        O = union(O, Set{Int64}([jphimin])) #depos jphimin traite
         sol.x[jphimin] = 1 #on ouvre le depos jphimin
+        sol.capacite[jphimin] = data.capacite[jphimin] #on ouvre le depos jphimin
         sol.z = sol.z + data.ouverture[jphimin] #on compte le cout d'ouverture
+print("ouverture de ",jphimin," avec ",clients[jphimin])
         for i = 1:size(clients[jphimin])[1]
             Crest = setdiff(Crest,Set{Int64}(clients[jphimin][i])) #client jphimin traite
-            C = union(C, Set{Int64}(clients[jphimin][i])) #client jphimin traite
             sol.y[clients[jphimin][i]] = jphimin #on associe le client i au depos jphimin
+            sol.capacite[jphimin] = sol.capacite[jphimin] - data.demande[clients[jphimin][i]] #on associe le client i au depos jphimin
             sol.z = sol.z + data.association[clients[jphimin][i], jphimin] #on compte le cout de connexion
         end
+println(" reste ",sol.capacite[jphimin])
     end
+
+println("solution complete : ",sol,"\n")
+
+    return Crest == Set{Int64}() #si on a reussis a construire une solution admissible
 end

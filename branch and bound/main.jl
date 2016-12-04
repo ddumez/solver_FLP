@@ -44,6 +44,7 @@ lecteur(nomfile, data) #on lit le fichier de donne
 initialise(data, sol) #on initialise la solution a une solution vide
 initialise(data, best)
 conctuctinitsol(best, data) #on construit une premiere solution initiale avec l'heuristique de homberg
+recopie(best, sol) #on recopie la solution touve pour la descente rapide
 relaxinit(mSSCFLP, data, solduale, lowerbound, upperbound) #on calcule la relaxation continue
 
 
@@ -51,6 +52,10 @@ println("Valeur de la solution construite : ", best.z)
 print("Facilites ouvertes : ")
 for j=1:data.nbDepos
 	print(best.x[j]," ");
+end
+print("\nCapacite restantes : ")
+for j=1:data.nbDepos
+	print(best.capacite[j]," ");
 end
 print("\nAssociation client/depos : ")
 for i=1:data.nbClients
