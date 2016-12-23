@@ -1,7 +1,7 @@
 function contruit()
 
 #fichier a utiliser
-nomfile = [50,51#=0,1,2,3,6,7,9,10,13,26,30,31,33=#] #nom des fichiers d'instances
+nomfile = [#=50,=#51#=0,1,2,3,6,7,9,10,13,26,30,31,33=#] #nom des fichiers d'instances
 #valeur des solutions optimale (sauf pour 0)
 zopt = Dict{Integer,Integer}(0 => 1, 1 => 2014, 2 => 4251, 3 => 6051, 6 => 2269, 7 => 4366, 9 => 2480, 10 => 23112, 13 => 3760, 26 => 4448, 30 => 10816, 31 => 4466, 33 => 39463, 50 => 360, 51 => 360)
 
@@ -72,7 +72,7 @@ println("(",nbClients,";",nbDepos,") : p$(nom)")
             ordre[j,i] = i
         end
     end
-    ordre = triDelta(delta, ordre)     #tri des clients par delta pour les facilite
+    ordre = triDelta(delta, ordre)#tri des clients par delta pour les facilite
 tic()
     #initialisation des ensembles
     Orest = Set{Int64}(); #facilite restantes
@@ -98,6 +98,13 @@ tic()
         push!(phi, 0.0)
     end
 
+println("capacite : ",capacite)
+println("ouverture : ",ouverture)
+println("ordre : ",ordre)
+println("demande : ",demande)
+println("delta : ",delta)
+println("\n\n");
+
     while ((O != totO) && (C != totC))
         #calcule le nombre de clients qui peut etre assigne a chaque service restant selon l'orde et les clients restant
         #calcule les valeur de phi
@@ -109,12 +116,14 @@ tic()
                 if ( (! isempty(find( x-> x==ordre[j,i] , Crest))) && (capaciterestante >= demande[ordre[j,i]]) ) #si le client ordre[i,j] n'a pas ete asigne et il rentre
                     push!(clients[j], ordre[j,i])
                     capaciterestante = capaciterestante - demande[ordre[j,i]]
-                    phi[j] = phi[j] + association[ordre[j,i],j]
+                    phi[j] = phi[j] + delta[ordre[j,i],j]
                 end
             end
             phi[j] = phi[j] / size(clients[j])[1]
         end
-
+println("phi : ",phi)
+println("client : ",clients)
+println("Orest : ",Orest)
         #recherche du phimin
         jphimin = first(Orest)
         for j in Orest
@@ -123,6 +132,12 @@ tic()
             end
         end
 
+println("depos ouvert : ",jphimin)
+print("ordre : ");
+for i=1:nbClients
+    print(ordre[jphimin,i]," ")
+end
+print("\n")
         #ajout dans la solution
         Orest = setdiff(Orest,Set{Int64}([jphimin])) #depos jphimin traite
         O = union(O, Set{Int64}([jphimin])) #depos jphimin traite
@@ -131,7 +146,9 @@ tic()
             Crest = setdiff(Crest,Set{Int64}(clients[jphimin][i])) #client jphimin traite
             C = union(C, Set{Int64}(clients[jphimin][i])) #client jphimin traite
             y[clients[jphimin][i],jphimin] = 1 #on associe le client i au depos jphimin
+println("client ",clients[jphimin][i]," ajoute, demande ",demande[clients[jphimin][i]])
         end
+println("\n")
     end
 
     #calcul de la valeur de la solution

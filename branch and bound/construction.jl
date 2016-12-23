@@ -22,7 +22,7 @@ function conctuctinitsol(sol::solution, data::instance)
                 if ( (! isempty(find( x-> x==data.ordre[j,i] , Crest))) && (capaciterestante >= data.demande[data.ordre[j,i]]) ) #si le client ordre[i,j] n'a pas ete asigne et il rentre
                     push!(clients[j], data.ordre[j,i])
                     capaciterestante = capaciterestante - data.demande[data.ordre[j,i]]
-                    phi[j] = phi[j] + data.association[data.ordre[j,i],j]
+                    phi[j] = phi[j] + data.delta[data.ordre[j,i],j]
                 end
             end
             phi[j] = phi[j] / size(clients[j])[1]
@@ -164,7 +164,7 @@ print("\n\n")
                 if ( (! isempty(find( x-> x==data.ordre[j,i] , Crest))) && (capaciterestante >= data.demande[data.ordre[j,i]]) ) #si le client ordre[i,j] n'a pas ete asigne et il rentre
                     push!(clients[j], data.ordre[j,i])
                     capaciterestante = capaciterestante - data.demande[data.ordre[j,i]]
-                    phi[j] = phi[j] + data.association[data.ordre[j,i],j]
+                    phi[j] = phi[j] + data.delta[data.ordre[j,i],j]
                 end
             end
             phi[j] = phi[j] / size(clients[j])[1]
