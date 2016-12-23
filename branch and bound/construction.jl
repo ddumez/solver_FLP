@@ -66,7 +66,7 @@ println("solution initiale : ",sol)
             push!(data.capacite, sol.capacite[j])
             push!(Orest, j)
         else
-            push!(data.ouverture, Inf) #on s'interdit de l'ouvrir
+            push!(data.ouverture,  2^55 - 1) #on s'interdit de l'ouvrir
             push!(data.capacite, 0)
         end
     end
@@ -111,10 +111,38 @@ println("data.nbClients : ",data.nbClients)
 println("data.nbDepos : ",data.nbDepos)
 println("data.association : ",data.association)
 println("data.delta : ",data.delta)
+println("data.ordre :")
+for j=1:data.nbDepos
+    print(j," : ")
+    for i=1:data.nbClients
+        print(data.ordre[j,i]," ")
+    end
+    print("\n")
+end
 println("data.ouverture : ",data.ouverture)
 println("data.capacite : ",data.capacite)
 println("Orest : ",Orest)
 println("Crest : ",Crest)
+println("\n")
+println(data.nbClients," ",data.nbDepos)
+for i=1:data.nbClients
+    for j=1:data.nbDepos
+        print(data.association[i,j]," ")
+    end
+    print("\n")
+end
+for i=1:data.nbClients
+    print(data.demande[i]," ")
+end
+print("\n")
+for j=1:data.nbDepos
+    print(data.ouverture[j]," ")
+end
+print("\n")
+for j=1:data.nbDepos
+    print(data.capacite[j]," ")
+end
+print("\n\n")
 
     #initialisation des tableau
     clients = []

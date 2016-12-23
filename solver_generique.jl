@@ -14,7 +14,7 @@ using Mosek
 function generique()
 
 #fichier a utiliser
-nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33]
+nomfile = [50,51#=0,1,2,3,6,7,9,10,13,26,30,31,33=#]
 
 for nom in nomfile
     #lecture des donnees

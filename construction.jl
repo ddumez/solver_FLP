@@ -1,9 +1,9 @@
 function contruit()
 
 #fichier a utiliser
-nomfile = [0,1,2,3,6,7,9,10,13,26,30,31,33] #nom des fichiers d'instances
+nomfile = [50,51#=0,1,2,3,6,7,9,10,13,26,30,31,33=#] #nom des fichiers d'instances
 #valeur des solutions optimale (sauf pour 0)
-zopt = Dict{Integer,Integer}(0 => 1, 1 => 2014, 2 => 4251, 3 => 6051, 6 => 2269, 7 => 4366, 9 => 2480, 10 => 23112, 13 => 3760, 26 => 4448, 30 => 10816, 31 => 4466, 33 => 39463)
+zopt = Dict{Integer,Integer}(0 => 1, 1 => 2014, 2 => 4251, 3 => 6051, 6 => 2269, 7 => 4366, 9 => 2480, 10 => 23112, 13 => 3760, 26 => 4448, 30 => 10816, 31 => 4466, 33 => 39463, 50 => 360, 51 => 360)
 
 for nom in nomfile
 #lecture des donnees
