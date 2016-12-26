@@ -34,13 +34,15 @@ sol = solution([], [], [], 0)
 best = solution([], [], [], 0)
 
 solduale = solutionrelache([], [], [], 0.0)
-nomfile = String("./../instances/p1.txt")
+nomfile = String("./../instances/p2.txt")
 mSSCFLP = solverLP()
 lowerbound = [] #pour les constrainte de borne sur les variables du LP
 upperbound = []
 
 
 lecteur(nomfile, data) #on lit le fichier de donne
+permutation = [i for i=1:data.nbClients] #la permutation des clients que l'on utilise, initialise a l'identite
+trieclients(data, permutation)
 initialise(data, sol) #on initialise la solution a une solution vide
 initialise(data, best)
 conctuctinitsol(best, data) #on construit une premiere solution initiale avec l'heuristique de homberg
@@ -72,6 +74,6 @@ for j=1:data.nbDepos
 end
 print("\nAssociation client/depos : ")
 for i=1:data.nbClients
-	print(best.y[i]," ")
+	print(best.y[permutation[i]]," ")
 end
 print("\n\n")

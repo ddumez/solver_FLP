@@ -131,3 +131,35 @@ function reinit(sol::solution, k::Int64, data::instance)
 		end
 	end
 end
+
+#trie les clients par demande decroissante
+function trieclients(data::instance, permutation::Array{Int64,1})
+	for i=1:data.nbClients
+		for j=1:(data.nbDepos-1)
+			if (data.demande[j] < data.demande[j+1])
+				#modification de la permutation
+				tmp = permutation[j+1]
+				permutation[j+1] = permutation[j]
+				permutation[j] = tmp
+
+				#modification des demandes
+				tmp = data.demande[j+1]
+				data.demande[j+1] = data.demande[j]
+				data.demande[j] = tmp
+
+				#modification des couts d'associations
+				for k=1:data.nbDepos
+					tmp = data.association[j+1,k]
+					data.association[j+1,k] = data.association[j,k]
+					data.association[j,k] = tmp
+				end
+
+			end
+		end
+	end
+end
+
+#trie les possibilite en fonction des couts d'associations
+function triPos(possibilite::Array{Int64,1}, association::Array{Int64,2}, client::Int64)
+    sort!(possibilite, by=x->association[client,x])
+end
