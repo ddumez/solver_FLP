@@ -1,7 +1,7 @@
 type solution
 	x #facilite ouvertes
-	capacite #capacite restantes des depos, 0 si non ouvert mettre a jour la constructionsi utilise
-	y #services associe, tableau d'entier car SS, -1 si pas associe
+	capacite #capacite restantes des depos, 0 si non ouvert
+	y #services associe, tableau d'entier car single source, -1 si pas associe
 	z::Int64 #valeur de la solution
 end
 
@@ -113,6 +113,7 @@ end
 
 #reinitialise tout ce qui ce trouve après l'indice k compris
 function reinit(sol::solution, k::Int64, data::instance)
+	#reinit des clients
 	for i=max(1, k - data.nbDepos) : data.nbClients
 		if (-1 != sol.y[i])
 			sol.z = sol.z - data.association[i, sol.y[i]]
@@ -121,6 +122,7 @@ function reinit(sol::solution, k::Int64, data::instance)
 		end
 	end
 
+	#reinit des depos
 	for j=k:data.nbDepos
 		if (1 == sol.x[j])
 			sol.x[j] = 0

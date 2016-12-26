@@ -63,7 +63,7 @@ for i=1:data.nbClients
 end
 print("\n\n")
 
-branchandbound(mSSCFLP, sol, solduale, data, 1, best, lowerbound, upperbound)
+branchandbound(mSSCFLP, sol, solduale, data, 1, best, lowerbound, upperbound, true)
 
 println("Valeur de la solution : ",best.z)
 print("Facilites ouvertes : ")

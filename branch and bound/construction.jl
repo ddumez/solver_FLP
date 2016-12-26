@@ -53,7 +53,7 @@ function conctuctinitsol(sol::solution, data::instance)
 end
 
 function completesol(sol::solution, dataP::instance, k::Int64)
-println("solution initiale : ",sol)
+#println("solution initiale : ",sol)
     #initialisation des ensembles
     Orest = Set{Int64}(); #facilite restantes
     Crest = Set{Int64}( (max(k + 1 - dataP.nbDepos , 1)):dataP.nbClients) #clients restant
@@ -107,11 +107,12 @@ println("solution initiale : ",sol)
     end
     data.ordre = triDelta(data.delta, data.ordre)
 
-println("data.nbClients : ",data.nbClients)
+#=println("data.nbClients : ",data.nbClients)
 println("data.nbDepos : ",data.nbDepos)
 println("data.association : ",data.association)
 println("data.delta : ",data.delta)
 println("data.ordre :")
+
 for j=1:data.nbDepos
     print(j," : ")
     for i=1:data.nbClients
@@ -119,12 +120,14 @@ for j=1:data.nbDepos
     end
     print("\n")
 end
+
 println("data.ouverture : ",data.ouverture)
 println("data.capacite : ",data.capacite)
 println("Orest : ",Orest)
 println("Crest : ",Crest)
 println("\n")
 println(data.nbClients," ",data.nbDepos)
+
 for i=1:data.nbClients
     for j=1:data.nbDepos
         print(data.association[i,j]," ")
@@ -143,7 +146,7 @@ for j=1:data.nbDepos
     print(data.capacite[j]," ")
 end
 print("\n\n")
-
+=#
     #initialisation des tableau
     clients = []
     phi = []
@@ -183,17 +186,17 @@ print("\n\n")
         sol.x[jphimin] = 1 #on ouvre le depos jphimin
         sol.capacite[jphimin] = data.capacite[jphimin] #on ouvre le depos jphimin
         sol.z = sol.z + data.ouverture[jphimin] #on compte le cout d'ouverture
-print("ouverture de ",jphimin," avec ",clients[jphimin])
+#print("ouverture de ",jphimin," avec ",clients[jphimin])
         for i = 1:size(clients[jphimin])[1]
             Crest = setdiff(Crest,Set{Int64}(clients[jphimin][i])) #client jphimin traite
             sol.y[clients[jphimin][i]] = jphimin #on associe le client i au depos jphimin
             sol.capacite[jphimin] = sol.capacite[jphimin] - data.demande[clients[jphimin][i]] #on associe le client i au depos jphimin
             sol.z = sol.z + data.association[clients[jphimin][i], jphimin] #on compte le cout de connexion
         end
-println(" reste ",sol.capacite[jphimin])
+#println(" reste ",sol.capacite[jphimin])
     end
 
-println("solution complete : ",sol,"\n")
+#println("solution complete : ",sol,"\n")
 
     return Crest == Set{Int64}() #si on a reussis a construire une solution admissible
 end
