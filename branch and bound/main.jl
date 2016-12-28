@@ -1,26 +1,26 @@
 using JuMP
 
 #pour résoudre avec GLPK
-#using GLPKMathProgInterface
-#using GLPK
+using GLPKMathProgInterface
+using GLPK
 
 #pour resoudre avec CPLEX
 # export LD_LIBRARY_PATH="/usr/local/opt/cplex/cplex/bin/x86-64_linux":$LD_LIBRARY_PATH
-#using CPLEX
+using CPLEX
 
 #pour resoudre avec Mosek
 using Mosek
 
 function solverMip()
     #return Model(solver=GLPKSolverMIP())::Model
-    #return Model(solver=CplexSolver())::Model
-    return Model(solver=MosekSolver())::Model
+    return Model(solver=CplexSolver())::Model
+    #return Model(solver=MosekSolver())::Model
 end
 
 function solverLP()
 	#return Model(solver=GLPKSolverLP())::Model
-    #return Model(solver=CplexSolver())::Model
-    return Model(solver=MosekSolver())::Model
+    return Model(solver=CplexSolver())::Model
+    #return Model(solver=MosekSolver())::Model
 end
 
 include("utilitaires.jl")
@@ -34,13 +34,15 @@ sol = solution([], [], [], 0)
 best = solution([], [], [], 0)
 
 solduale = solutionrelache([], [], [], 0.0)
-nomfile = String("./../instances/p2.txt")
-mSSCFLP = solverLP()
+nomfile = String("./../instances/p1.txt")
+#nomfile = String("./../instances2/cap61")
+mSSCFLP = solverMip()
 lowerbound = [] #pour les constrainte de borne sur les variables du LP
 upperbound = []
 
 
 lecteur(nomfile, data) #on lit le fichier de donne
+#lecteur2(nomfile, data)
 permutation = [i for i=1:data.nbClients] #la permutation des clients que l'on utilise, initialise a l'identite
 trieclients(data, permutation)
 initialise(data, sol) #on initialise la solution a une solution vide

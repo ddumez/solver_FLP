@@ -86,6 +86,59 @@ function lecteur(nomfile::String, data::instance)
     data.ordre = triDelta(data.delta, data.ordre)     #tri des clients par delta pour les facilite
 end
 
+function lecteur2(nomfile::String, data::instance)
+    f = open(nomfile)::IOStream
+    tmp = split(readline(f)," ")::Array
+	data.nbDepos = parse(Int64, tmp[1])::Int64
+    data.nbClients = parse(Int64, tmp[2] )::Int64
+
+
+	data.ouverture = []
+	data.capacite =[]::Array
+	for j = 1:data.nbDepos
+		tmp = split(readline(f)," ")::Array
+		push!(data.capacite, convert(Int64,floor(parse(Float64, tmp[1]))))
+		push!(data.ouverture, convert(Int64,floor(parse(Float64, tmp[2]))))
+	end
+
+	tmp = split(readline(f)," ")::Array
+	data.demande = []::Array
+	for i = 1:data.nbClients
+		push!(data.demande, convert(Int64,floor(parse(Float64, tmp[i]))))
+	end
+
+    data.association = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #cout d'association
+    for i = 1:data.nbDepos
+        tmp = split(readline(f)," ")::Array
+        for j = 1:data.nbClients
+            data.association[j,i] = convert(Int64,floor(parse(Float64, tmp[j])))::Int64
+        end
+    end
+
+    data.delta = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #cout d'association
+    for i = 1:data.nbClients
+        #recherche de cmini
+        cmini = data.association[i,1]
+        for j = 1:data.nbDepos
+            if(data.association[i,j] < cmini)
+                cmini = data.association[i,j]
+            end
+        end
+        #calcul des delta
+        for j = 1:data.nbDepos
+            data.delta[i,j] = data.association[i,j] - cmini
+        end
+    end
+
+    data.ordre = collect(reshape(1:data.nbDepos*data.nbClients, data.nbDepos, data.nbClients))::Array
+    for j =1:data.nbDepos
+        for i=1:data.nbClients
+            data.ordre[j,i] = i
+        end
+    end
+    data.ordre = triDelta(data.delta, data.ordre)     #tri des clients par delta pour les facilite
+end
+
 # trie chaque ligne j par ordre croissant de delta[i,j] ou i est le client corespondant
 function triDeltaRec(delta::Array{Int64,2})
     compteur = [];

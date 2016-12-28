@@ -4,11 +4,11 @@ include("construction.jl")
 include("utilitaires.jl")=#
 
 function branchandbound(mSSCFLP::Model, sol::solution, solduale::solutionrelache, data::instance, k::Int64, best::solution, lowerbound, upperbound, etat::Bool)
-for i=1:k-1
+#=for i=1:k-1
 	print("\t")
 end
 println("k = ",k," sol : ",sol)
-
+=#
 	if (k > data.nbDepos + data.nbClients) #solution complete
 		if (sol.z < best.z)
 			recopie(sol, best) #on sauvegarde la solution comme meilleure actuelle
