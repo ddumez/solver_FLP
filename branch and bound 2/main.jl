@@ -37,8 +37,8 @@ solduale = solutionrelache([], [], [], 0.0)
 nomfile = String("./../instances/p1.txt")
 #nomfile = String("./../instances2/cap61")
 mSSCFLP = solverMip()
-lowerbound = [] #pour les constrainte de borne sur les variables du LP
-upperbound = []
+lowerbound = tabConstaint() #pour les constrainte de borne sur les variables du LP
+upperbound = tabConstaint()
 
 
 lecteur(nomfile, data) #on lit le fichier de donne
@@ -89,8 +89,11 @@ for j = 1:data.nbDepos
 end
 println("\n\n")
 
-#=
-branchandbound(mSSCFLP, sol, solduale, data, 1, best, lowerbound, upperbound)
+#recherche de la première variable a brancher
+println(rechercheBranch(solduale, data))
+
+
+branchandbound(mSSCFLP, sol, solduale, data, rechercheBranch(solduale, data), best, lowerbound, upperbound)
 
 println("Valeur de la solution : ",best.z)
 print("Facilites ouvertes : ")
@@ -102,4 +105,3 @@ for i=1:data.nbClients
 	print(best.y[i]," ")
 end
 print("\n\n")
-=#

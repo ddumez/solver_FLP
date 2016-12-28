@@ -1,4 +1,4 @@
-function relaxinit(mSSCFLP::Model, data::instance, solduale::solutionrelache, lowerbound, upperbound)
+function relaxinit(mSSCFLP::Model, data::instance, solduale::solutionrelache, lowerbound::tabConstaint, upperbound::tabConstaint)
 	#variables
     solduale.x = @variable(mSSCFLP, x[1:data.nbDepos])
     solduale.y = @variable(mSSCFLP, y[1:data.nbClients,1:data.nbDepos])

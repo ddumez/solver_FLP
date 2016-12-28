@@ -12,6 +12,8 @@ type solutionrelache
     z::Float64 #valeur de la solution
 end
 
+typealias tabConstaint Array{JuMP.ConstraintRef{JuMP.Model,JuMP.GenericRangeConstraint{JuMP.GenericAffExpr{Float64,JuMP.Variable}}},1}
+
 type instance
 	nbClients::Int64
 	nbDepos::Int64
