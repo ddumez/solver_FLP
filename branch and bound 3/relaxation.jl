@@ -46,7 +46,7 @@ function completeRelax(mSSCFLP::Model, data::instance, solduale::solutionrelache
 		for j=1:data.nbDepos
             JuMP.setRHS(lowerbound[compt], sol.x[j])
             JuMP.setRHS(upperbound[compt], sol.x[j])
-			compt = compt +1
+			compt +=1
 		end
 
 		#on force les association que l'on a deja choisis
@@ -56,14 +56,13 @@ function completeRelax(mSSCFLP::Model, data::instance, solduale::solutionrelache
 				if (j == sol.y[i])
                     JuMP.setRHS(lowerbound[compt], 1)
                     JuMP.setRHS(upperbound[compt], 1)
-                    compt = compt +1
 				else
                     JuMP.setRHS(lowerbound[compt], 0)
                     JuMP.setRHS(upperbound[compt], 0)
-                    compt = compt +1
 				end
+                compt +=1
 			end
-			i = i+1
+			i +=1
 		end
 
 		#on laisse les autres libre
@@ -71,23 +70,23 @@ function completeRelax(mSSCFLP::Model, data::instance, solduale::solutionrelache
 			for j=1:data.nbDepos
                 JuMP.setRHS(lowerbound[compt], 0)
                 JuMP.setRHS(upperbound[compt], 1)
-                compt = compt +1
+                compt +=1
 			end
-			i = i+1
+			i +=1
 		end
 	else
 		#on force les depos choisis
 		for j=1:k
             JuMP.setRHS(lowerbound[compt], sol.x[j])
             JuMP.setRHS(upperbound[compt], sol.x[j])
-			compt = compt +1
+			compt +=1
 		end
 
 		#on laisse les autres libre
 		for j=(k+1):data.nbDepos
             JuMP.setRHS(lowerbound[compt], 0)
             JuMP.setRHS(upperbound[compt], 1)
-			compt = compt +1
+			compt +=1
 		end
 
 		#toutes les variables sont libres
@@ -95,7 +94,7 @@ function completeRelax(mSSCFLP::Model, data::instance, solduale::solutionrelache
 			for j = 1:data.nbDepos
                 JuMP.setRHS(lowerbound[compt], 0)
                 JuMP.setRHS(upperbound[compt], 1)
-    			compt = compt +1
+    			compt +=1
 			end
 		end
 	end
@@ -114,56 +113,91 @@ end
 
 function completeRelaxClient(mSSCFLP::Model, data::instance, solduale::solutionrelache, sol::solution, lowerbound::tabConstaint, upperbound::tabConstaint, dejatest::Array{Int64,1}, k::Int64)
     compt = 1 #pour sovoir ou l'on en est dans les tableaux de contraintes
-    k = k-data.nbDepos
 
-    #ouverture/fermueture des depos
-	for j=1:data.nbDepos
-        if (-1 != sol.x[j]) #depos fixe
-            JuMP.setRHS(lowerbound[compt], sol.x[j])
-            JuMP.setRHS(upperbound[compt], sol.x[j])
-        else #ou pas
+    #on force l'ouverture/fermueture des depos
+    for j=1:data.nbDepos
+        JuMP.setRHS(lowerbound[compt], sol.x[j])
+        JuMP.setRHS(upperbound[compt], sol.x[j])
+        compt +=1
+    end
+
+    #on force les association que l'on a deja choisis
+    i = 1
+    while (i < k - data.nbDepos)
+        for j=1:data.nbDepos
+            if (j == sol.y[i])
+                JuMP.setRHS(lowerbound[compt], 1)
+                JuMP.setRHS(upperbound[compt], 1)
+            else
+                JuMP.setRHS(lowerbound[compt], 0)
+                JuMP.setRHS(upperbound[compt], 0)
+
+            end
+            compt +=1
+        end
+        i += 1
+    end
+
+    #travail sur le depos en cour
+    for j=1:data.nbDepos
+        if ! isempty(find(x -> x==j, dejatest))
+            JuMP.setRHS(lowerbound[compt], 0)
+            JuMP.setRHS(upperbound[compt], 0)
+        else
             JuMP.setRHS(lowerbound[compt], 0)
             JuMP.setRHS(upperbound[compt], 1)
         end
         compt += 1
-	end
+    end
+    i += 1
 
-	#association des clients
-	for i=1:data.nbClients
-        if (i == k)
-            for j=1:data.nbDepos
-                if ! isempty(find(x -> x==j, dejatest))
-                    JuMP.setRHS(lowerbound[compt], 0)
-                    JuMP.setRHS(upperbound[compt], 0)
-                else
-                    JuMP.setRHS(lowerbound[compt], 0)
-                    JuMP.setRHS(upperbound[compt], 1)
-                end
-                compt += 1
-            end
-        else
-    		for j=1:data.nbDepos
-                if (-1 != sol.y[i]) #depos fixe pour ce client
-        			if (j == sol.y[i])
-                        JuMP.setRHS(lowerbound[compt], 1)
-                        JuMP.setRHS(upperbound[compt], 1)
-        			else
-                        JuMP.setRHS(lowerbound[compt], 0)
-                        JuMP.setRHS(upperbound[compt], 0)
-        			end
-                else #ou pas
-                    JuMP.setRHS(lowerbound[compt], 0)
-                    JuMP.setRHS(upperbound[compt], 1)
-                end
-                compt += 1
-    		end
+    #on laisse les autres libre
+    while (i <= data.nbClients)
+        for j=1:data.nbDepos
+            JuMP.setRHS(lowerbound[compt], 0)
+            JuMP.setRHS(upperbound[compt], 1)
+            compt = compt +1
         end
-	end
+        i +=1
+    end
+
+#println(mSSCFLP)
 
 	#resolution
-    solve(mSSCFLP; suppress_warnings=true, relaxation=true)
+    return solve(mSSCFLP; suppress_warnings=true, relaxation=false)
 
-    #extraction des resultats
-    solduale.z = getobjectivevalue(mSSCFLP)
+end
+
+
+function completeRelaxDepos(mSSCFLP::Model, data::instance, solduale::solutionrelache, sol::solution, lowerbound::tabConstaint, upperbound::tabConstaint, k::Int64)
+    compt = 1 #pour sovoir ou l'on en est dans les tableaux de contraintes
+
+    #on force les depos choisis
+    for j=1:(k-1)
+        JuMP.setRHS(lowerbound[compt], sol.x[j])
+        JuMP.setRHS(upperbound[compt], sol.x[j])
+        compt +=1
+    end
+
+    #on laisse les autres libre et celui ci pour l'observer
+    for j=k:data.nbDepos
+        JuMP.setRHS(lowerbound[compt], 0)
+        JuMP.setRHS(upperbound[compt], 1)
+        compt +=1
+    end
+
+    #toutes les variables sont libres
+    for i = 1:data.nbClients
+        for j = 1:data.nbDepos
+            JuMP.setRHS(lowerbound[compt], 0)
+            JuMP.setRHS(upperbound[compt], 1)
+            compt +=1
+        end
+    end
+
+#println(mSSCFLP)
+
+	#resolution
+    solve(mSSCFLP; suppress_warnings=true, relaxation=false)
 
 end

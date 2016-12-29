@@ -112,6 +112,7 @@ println("new best : ", best)
 
 		#on cherche l'ensemble des depos ouvert auquel on peu associer ce clients
 		possible = Array{Int64,1}()
+		completeRelaxClient(mSSCFLP, data, solduale, sol, lowerbound, upperbound, dejatest, k)
 		for j=1:data.nbDepos
 			if (data.demande[k-data.nbDepos] <= sol.capacite[j]) && (getvalue(solduale.y[k-data.nbDepos, j]) > 0.0001)
 				push!(possible, j)
