@@ -1,3 +1,31 @@
+function rechercheBranch(solduale::solutionrelache, data::instance)
+	flag = false
+	res = 1
+	while !flag && (res <= data.nbDepos + data.nbClients)
+
+		if (res <= data.nbDepos)
+			flag = (getvalue(solduale.x[res]) > 0.0001) && (getvalue(solduale.x[res]) < 0.9999)
+		else
+			j = 1
+			#si l'une d'elle est a 1 alors elle est fixé donc on s'arette
+			while (j <= data.nbDepos) && (!flag) && (getvalue(solduale.y[res-data.nbDepos,j]) < 0.9999)
+				flag = (getvalue(solduale.y[res-data.nbDepos,j]) > 0.0001) #la variable n'est pas fixe
+				j += 1
+			end
+
+		end
+
+		res += 1
+	end
+
+	if flag
+		return res -1
+	else
+		return -1
+	end
+
+end
+
 function branchandbound(mSSCFLP::Model, sol::solution, solduale::solutionrelache, data::instance, k::Int64, best::solution, lowerbound::tabConstaint, upperbound::tabConstaint, etat::Bool)
 for i=1:k-1
 	print("\t")
