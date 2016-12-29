@@ -310,23 +310,23 @@ modéliser la relaxation linéaire dans un solveur commercial et effectuer la pr
 utiliser l'heuristique de Delmaire sur le problème initial pour lancer l'algorithme.
 \end{itemize}
 
-Une fois ces calcul effectuer on lance l'algorithme dessus. Ce dernier vas construire sa pile d'appel récursif : tout les dépôt puis tout les clients. Chaque appels dans cette pile gère un élément : 
+Une fois ces calcul effectué on lance l'algorithme dessus. Ce dernier vas construire sa pile d'appel récursif : tout les dépôts puis tout les clients. Chaque appel dans cette pile gère un élément : 
 \begin{itemize}
 \item
-l'ouverture ou non d'une facilité
+l'ouverture ou non d'une facilitée
 \item
 l'affectation d'un client
 \end{itemize}
 Une fois arrivé au bout on teste si la solution est meilleure que l'actuelle meilleure.\\
 
-Ensuite on remonte dans la pile d’appel. On va alors tester les autres possibilité :
+Ensuite on remonte dans la pile d’appel. On va alors tester les autres possibilités :
 \begin{itemize}
 \item
 si on se situe sur un appel concernant une facilité alors on la ferme si elle était ouverte, ou au contraire si elle était fermé on l'ouvre.
 \item
-si on se situe sur un appel concernant un client alors on teste les autres associations possible, i.e. les autres dépôt ayant asse de capacité restante pour le satisfaire.
+si on se situe sur un appel concernant un client alors on teste les autres associations possible, i.e. les autres dépôts ayant asse de capacité restante pour le satisfaire.
 \end{itemize}
-Après cette affectation on calcule la relaxation linéaire du problème dans lequel toutes les variables correspondant à des choix que l'on a déjà fait sont fixé. Si la valeur de cette relaxation est inférieure au coût de notre meilleure solution alors on continue. C'est à dire que l'on utilise de nouveau l'heuristique de Delmaire sur le sous problème :
+Après cette affectation on calcule la relaxation linéaire du problème dans lequel toutes les variables correspondants à des choix que l'on a déjà fait sont fixés. Si la valeur de cette relaxation est inférieure au coût de notre meilleure solution alors on continue. C'est à dire que l'on utilise de nouveau l'heuristique de Delmaire sur le sous problème :
 \begin{itemize}
 \item
 les des dépôts ouverts ont un coût nul, leurs coûts d'ouverture est déjà compté.
@@ -355,12 +355,13 @@ On utilise une fonction pour rechercher la prochaine variable à brancher. Cette
 \item
 une facilité avec la variable indiquant son ouverture non binaire, i.e. différente de 0 ou 1
 \item
-un client avec l'une de ses variables indiquant son association non binaire.
+un client avec l'une de ses variables indiquant son association non binaire. On peut alors noter que si un client est totalement satisfait par un facilité (i.e. variable correspondante égale à 1) alors les autres variables de ce clients sont nul donc il est inutile des les regarder.
 \end{itemize}
 
 Quand on branche sur un dépôt on lui donne la valeur la plus proche de sa valeur relâché puis l'autre. Dans les deux cas on teste si la relaxation linéaire à une valeur inférieure à notre meilleure solution puis on continu en branchant sur une autre variable.\\
 
-Quand on branche sur un client on détermine une liste de dépôt possible. Ce sont ceux qui on encore une capacité nécessaire pour satisfaire ce client et don la variable correspondant à cette association dans la relaxation linéaire est non nulle. Pour ne pas omettre de possibilité on effectue cela plusieurs fois. C'est à dire qu'après avoir tester ces possibilité on les interdit dans le problème relâché, on le résout et on recommence. On s’arrête de le faire quand il n'y a plus de possibilité.\\
+Quand on branche sur un client on détermine une liste de dépôt possible. Ce sont ceux qui on encore une capacité nécessaire pour satisfaire ce client et don la variable correspondant à cette association dans la relaxation linéaire est non nulle. Pour ne pas omettre de possibilité on effectue cela plusieurs fois. C'est à dire qu'après avoir testé ces possibilités on les interdits dans le problème relâché, on le résout et on recommence. On s’arrête de le faire quand il n'y a plus de possibilité.\\
+\textit{Question : sous quelle condition peut on s’arrêter de le faire quand l'une d'elle est égal à 1 ? En effet si on la fixe les autres seront nulle et on y reviendra jamais.} \\
 
 On remarque alors que l'on ne branche jamais sur des variables ayant une valeur binaire dans la relaxation. Ces dernières sont fixés dans la solution lors du cas de base : toutes les variables sont binaires.\\
 
@@ -378,7 +379,7 @@ Malheureusement cela n'améliore pas les performances. En effet la seconde versi
 
 \section{Pistes d'améliorations}
 
-Diverses piste sont envisagé mais elle n'ont pus êtres exploité à leurs maximum par manque de temps. Ces dernière sont classé par ordre d'aboutissement, donc de temps nécessaire.
+Diverses pistes sont envisagés mais elle n'ont toutes pus êtres exploités à leur maximum, ou pas du tout, par manque de temps. Ces dernières sont classés par ordre d'aboutissement, donc de temps nécessaire.
 
 \subsection{Ordre de parcours}
 
@@ -395,9 +396,9 @@ en commençant par les possibilité telle que la variable de la solution relâch
 \end{itemize}
 Mais cela ne modifie pas significativement les temps d’exécutions.\\
 
-Pour la première et la troisième version on peut changer l'ordre des clients et des dépôts. En effet avant de lancer l'algorithme on peu permuter les clients ou les dépôts entre eux tout en conservant les dépôts au début. Il a été tester de trier les clients par demande décroissante pour commencer par fixer les clients les plus difficile à associer. Mais cela ne modifie pas non plus de manière significative le temps d’exécution.\\
+Pour la première et la troisième version on peut changer l'ordre des clients et des dépôts. En effet avant de lancer l'algorithme on peu permuter les clients ou les dépôts entre eux tout en conservant les dépôts au début. Il a été testé de trier les clients par demande décroissante pour commencer par fixer les clients les plus difficile à associer. Mais cela ne modifie pas non plus de manière significative le temps d’exécution.\\
 
-Pour la deuxième possibilité il a été tester de ne pas brancher sur la première variable non binaire trouvé mais selon certains critères. On continue branche encore toujours sur les facilités en premier. Mais on a comme critère :
+Pour la deuxième possibilité il a été testé de ne pas brancher sur la première variable non binaire trouvé mais selon certains critères. On continue toujours de brancher sur les facilitées en premier. Mais on a comme critère :
 \begin{itemize}
 \item
 si il reste des dépôt avec des valeurs non binaire alors on banche sur celle qui à la valeur la plus proche de la valeur binaire. Et on commencera bien entendu par cette valeur dans le parcours.
@@ -406,19 +407,21 @@ sinon on branche sur le client qui possède la variable de choix du dépôt la p
 \end{itemize}
 Cela non plus ne conduit pas à une amélioration significative.\\
 
-Malgré ces divers échec il pourrait être pertinent d’étudier plus finement le comportement de l'algorithme selon divers point de traitement et les ordres choisis. Mais il faut toujours garder en tète que le tris des possibilité ne se fait pas en temps constant, même si il peut facilement devenir négligeable devant le temps qu'il peut faire gagner si il dirige plus rapidement l'algorithme vers de meilleures solutions.
+Malgré ces divers échec il pourrait être pertinent d’étudier plus finement le comportement de l'algorithme selon divers point de traitement et les ordres choisis. Mais il faut toujours garder en tète que le tri des possibilités ne se fait pas en temps constant, même si il peut facilement devenir négligeable devant le temps qu'il peut faire gagner si il dirige plus rapidement l'algorithme vers de meilleures solutions.
 
 \subsection{Parcours non séquentiel}
 
-Dans la troisième version de l'algorithme un parcours non séquentiel permettrai de tirer un meilleur parti des avantage de la seconde version. En effet cela nous permettrai de récupérer le fait de ne pas brancher sur toutes les variables.\\
+Dans la troisième version de l'algorithme un parcours non séquentiel permet de tirer un meilleur parti des avantages de la seconde version. En effet cela nous permet de récupérer le fait de ne pas brancher sur toutes les variables.\\
 
-Mais pour cela il faut modifier la manière don l'algorithme fonctionne au niveau de sa création de sous problème pour l'heuristique de Delmaire. Car pour l'instant ces algorithmes sous entende des traitement en tirant partit de la séquentialité du parcours.\\
+L'implémentation de la construction des sous problèmes pour l'heuristique de Delmaire ainsi que pour la relaxation linéaire ont été effectué sur la troisième version de l'algorithme. Il utilise désormais l'heuristique de Delmaire quand il le peut, et sinon il recherche la première variable non binaire et branche dessus. Le parcours se fait donc en allé-retour : on saute jusqu’à une variable non binaire, ce qui nous permet de construire le reste de la solution, mais cela rend certaines variables précédentes non binaire donc on retourne dessus avant de répéter le même procédé. Malgré un nombre plus faible de variable sur lesquels ont ne branche pas, par rapport à la deuxième itération, on évite tout de même certain branchement.\\
+
+Malgré cette amélioration l'algorithme met toujours beaucoup de temps pour étudier les configuration des clients avec un positionnement de facilité.\\
 
 \subsection{Coupes de Gomory}
 
-La qualité de la relaxation à un fort impact sur la vitesse du branch and bound car cela permet de sonder plus rapidement les nœuds. L'utilisation de variable binaire pour les dépôt a été abandonné car cela ralentit la résolution car nécessite un solveur MIP et n'accélère pas l'algorithme car c'est généralement le tests des combinaison des affectation qui est très long. En effet déjà asse peu de configuration de dépôt sont exploré. Mais justement pour avoir de meilleures borne pour cette partie de l'algorithme des inégalités valides peuvent de révélé intéressantes.\\
+La qualité de la relaxation à un fort impact sur la vitesse du branch and bound car cela permet de sonder plus rapidement les nœuds. L'utilisation de variables binaires pour les dépôts à été abandonné car cela ralentit la résolution, cela nécessite un solveur MIP et n'accélère pas l'algorithme car c'est généralement le tests des combinaisons des affectations qui est très long. En effet déjà asse peu de configuration de dépôt sont exploré. Mais justement pour avoir de meilleures bornes pour cette partie de l'algorithme des inégalités valides peuvent de révéler intéressantes.\\
 
-Pour mettre en place des coupes de gomory il faudrait modifier le programme linéaire de la modélisation de la relaxation pour avoir accès au variables d'écart des inégalité qui peuvent être intéressantes. Il faudrait aussi étudier dans quelle mesure ces inégalité doivent être ajouté, car il ne faudrait pas surcharger la relaxation car elle deviendrai plus longue à résoudre.
+Pour mettre en place des coupes de gomory il faudrait modifier le programme linéaire de la modélisation de la relaxation pour avoir accès aux variables d'écarts des inégalités qui peuvent être intéressantes. Il faudrait aussi étudier dans quelle mesure ces inégalités doivent être ajoutés, car il ne faudrait pas surcharger la relaxation, elle deviendrai plus longue à résoudre.
 
 \subsection{Amélioration heuristique de la solution initiale}
 
@@ -428,16 +431,19 @@ Une recherche heuristique est développé dans le papier "A Multi-Exchange Heuri
 
 \subsection{Utilisation des relaxations lagrangiennes}
 
-Dans une optique similaire à l'utilisation d'une heuristique Homberg propose l'utilisation de relaxations lagrangiennes. En effets grâce à diverses propriété de son modèle de relaxation lagrangienne il est possible de déterminer asse précisément la configuration de facilité a ouvrir pour atteindre l'optimum.\\
+Dans une optique similaire à l'utilisation d'une heuristique Homberg propose l'utilisation de relaxations lagrangiennes. En effets grâce à diverses propriété de son modèle de relaxation lagrangienne il est possible de déterminer asse précisément la configuration de facilité à ouvrir pour atteindre l'optimum.\\
 
 Mais cet initialisation est aussi compliqué à mettre en place car requiert des méthodes proches de celle de l'optimisation non linéaire pour trouver le bon vecteur $\lambda$ à utiliser. En effet la qualité de la relaxation est intimement lié à celui ci donc des valeurs de mauvaise qualité n’apporterai rien.\\
 
 \subsection{Correction de l'heuristique}
 
-La recherche d'une autre heuristique de construction ou la correction de celle de Homberg permettrai d'utiliser le premier algorithme à son plein potentiel. Mais la recherche de solution admissible est très compliqué, surtout sur les problème étroitement contraint qui nous intéresse.\\
+La recherche d'une autre heuristique de construction ou la correction de celle de Homberg permettrai d'utiliser le premier algorithme à son plein potentiel. Mais la recherche de solution admissible est très compliqué, surtout sur les problèmes étroitement contraint qui nous intéresse.\\
 
 On pourrais aussi envisager l'utilisation d'une procédure de réparation si l'heuristique venais à échouer. Mais cette procédure ne devrai pas être trop longue et surtout être capable d'affirmer qu'il n'existe pas de solution dans le plus nombre de cas possible.\\
 
+\section*{Conclusion}
+
+La version de l'algorithme de branch and bound la plus efficace don on dispose est la deuxième itération de la troisième version : la version mixte amélioré. De plus on remarque une légère amélioration en utilisant la permutation des clients pour traiter ceux ayant une plus forte demande en premier. Cet algorithme s’exécute alors dans les mêmes ordre de grandeur que GLPK mais reste risible face à Mosek ou CPLEX.\\
 \section*{Bibliographie}
 
 \begin{itemize}

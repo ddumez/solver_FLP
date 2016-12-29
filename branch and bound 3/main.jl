@@ -44,7 +44,7 @@ upperbound = tabConstaint()
 lecteur(nomfile, data) #on lit le fichier de donne
 #lecteur2(nomfile, data)
 permutation = [i for i=1:data.nbClients] #la permutation des clients que l'on utilise, initialise a l'identite
-#trieclients(data, permutation)
+trieclients(data, permutation)
 initialise(data, sol) #on initialise la solution a une solution vide
 initialise(data, best)
 conctuctinitsol(best, data) #on construit une premiere solution initiale avec l'heuristique de homberg

@@ -49,33 +49,44 @@ function conctuctinitsol(sol::solution, data::instance)
         end
     end
 
+    for j in Orest
+        if (-1 == sol.x[j])
+            sol.x[j] = 0
+        end
+    end
+
     return Crest == Set{Int64}() #si on a reussi s a construire une solution admissible
 end
 
 function completesol(sol::solution, dataP::instance, k::Int64)
 #println("solution initiale : ",sol)
     #initialisation des ensembles
-    Orest = Set{Int64}(); #facilite restantes
-    Crest = Set{Int64}( (max(k + 1 - dataP.nbDepos , 1)):dataP.nbClients) #clients restant
+    Orest = Set{Int64}() #facilite restantes
+    Crest = Set{Int64}() #clients restant
+    for i = (max(k + 1 - dataP.nbDepos , 1)):dataP.nbClients
+        if (-1 == sol.y[i]) #client à traiter
+            push!(Crest, i)
+        end
+    end
 
     #creation de l'ensemble de donne du sous-probleme
     data = instance(dataP.nbClients, dataP.nbDepos, [], dataP.demande, [], [], [], [])
-    for j=1:min(k, dataP.nbDepos)
+    for j=1:dataP.nbDepos
         if (1 == sol.x[j])
             push!(data.ouverture, 0) #il est deja ouvert donc deja paye
             push!(data.capacite, sol.capacite[j])
             push!(Orest, j)
-        else
+        elseif (0 == sol.x[j])
             push!(data.ouverture,  2^55 - 1) #on s'interdit de l'ouvrir
             push!(data.capacite, 0)
+        else #if (-1 == sol.x[j])
+            push!(data.ouverture, dataP.ouverture[j])
+            push!(data.capacite, dataP.capacite[j])
+            push!(Orest, j)
         end
     end
-    for j=(k+1):data.nbDepos
-        push!(data.ouverture, dataP.ouverture[j])
-        push!(data.capacite, dataP.capacite[j])
-        push!(Orest, j)
-    end
-    data.association = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #cout d'association
+
+    data.association = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #couts d'associations
     for i = 1:data.nbClients
         for j = 1:data.nbDepos
             if (j in Orest)
@@ -85,7 +96,8 @@ function completesol(sol::solution, dataP::instance, k::Int64)
             end
         end
     end
-    data.delta = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #cout d'association
+
+    data.delta = collect(reshape(1:data.nbDepos*data.nbClients, data.nbClients, data.nbDepos))::Array #delta des couts d'associations
     for i = 1:data.nbClients
         #recherche de cmini
         cmini = data.association[i,1]
@@ -99,6 +111,7 @@ function completesol(sol::solution, dataP::instance, k::Int64)
             data.delta[i,j] = data.association[i,j] - cmini
         end
     end
+
     data.ordre = collect(reshape(1:data.nbDepos*data.nbClients, data.nbDepos, data.nbClients))::Array
     for j =1:data.nbDepos
         for i=1:data.nbClients
@@ -194,6 +207,12 @@ print("\n\n")
             sol.z = sol.z + data.association[clients[jphimin][i], jphimin] #on compte le cout de connexion
         end
 #println(" reste ",sol.capacite[jphimin])
+    end
+
+    for j in Orest
+        if (-1 == sol.x[j])
+            sol.x[j] = 0
+        end
     end
 
 #println("solution complete : ",sol,"\n")

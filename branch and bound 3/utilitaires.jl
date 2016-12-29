@@ -27,7 +27,7 @@ end
 
 function initialise(data::instance, sol::solution)
 	sol.y = [ -1 for i=1:data.nbClients]
-	sol.x = [ 0 for j=1:data.nbDepos]
+	sol.x = [ -1 for j=1:data.nbDepos]
 	sol.capacite = [0 for j=1:data.nbDepos]
 	sol.z = 0
 end
@@ -164,27 +164,6 @@ function recopie(sol1::solution, sol2::solution)
 		sol2.y[i] = sol1.y[i]
 	end
 	sol2.z = sol1.z
-end
-
-#reinitialise tout ce qui ce trouve après l'indice k compris
-function reinit(sol::solution, k::Int64, data::instance)
-	#reinit des clients
-	for i=max(1, k - data.nbDepos) : data.nbClients
-		if (-1 != sol.y[i])
-			sol.z = sol.z - data.association[i, sol.y[i]]
-			sol.capacite[sol.y[i]] = sol.capacite[sol.y[i]] + data.demande[i]
-			sol.y[i] = -1
-		end
-	end
-
-	#reinit des depos
-	for j=k:data.nbDepos
-		if (1 == sol.x[j])
-			sol.x[j] = 0
-			sol.z = sol.z - data.ouverture[j]
-			sol.capacite[j] = 0
-		end
-	end
 end
 
 #trie les clients par demande decroissante
