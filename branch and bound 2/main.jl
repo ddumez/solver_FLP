@@ -52,7 +52,11 @@ relaxinit(mSSCFLP, data, solduale, lowerbound, upperbound) #on calcule la relaxa
 println("Valeur de la solution construite : ", best.z)
 print("Facilites ouvertes : ")
 for j=1:data.nbDepos
-	print(best.x[j]," ");
+    if (-1 == best.x[j])
+        print("0 ")
+    else
+        print("1 ")
+    end
 end
 print("\nCapacite restantes : ")
 for j=1:data.nbDepos
@@ -64,7 +68,7 @@ for i=1:data.nbClients
 end
 print("\n\n")
 
-println("valeur de la relxation initiale = : ", getobjectivevalue(mSSCFLP))
+println("valeur de la relaxation initiale = : ", getobjectivevalue(mSSCFLP))
 for i = 1:data.nbClients
     for j = 1:data.nbDepos
         if (getvalue(solduale.y[i,j]) < 0.0001)
@@ -89,10 +93,7 @@ for j = 1:data.nbDepos
 end
 println("\n\n")
 
-#recherche de la première variable a brancher
-println(rechercheBranch(solduale, data))
-
-
+#resolution
 branchandbound(mSSCFLP, sol, solduale, data, rechercheBranch(solduale, data), best, lowerbound, upperbound)
 
 println("Valeur de la solution : ",best.z)

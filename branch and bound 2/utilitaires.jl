@@ -27,7 +27,7 @@ end
 
 function initialise(data::instance, sol::solution)
 	sol.y = [ -1 for i=1:data.nbClients ]
-	sol.x = [0 for j=1:data.nbDepos]
+	sol.x = [-1 for j=1:data.nbDepos]
 	sol.capacite = [0 for j=1:data.nbDepos]
 	sol.z = 0
 end
@@ -170,4 +170,43 @@ end
 #trie les possibilite en fonction des couts d'associations
 function triPos(possibilite::Array{Int64,1}, association::Array{Int64,2}, client::Int64)
     sort!(possibilite, by=x->association[client,x])
+end
+
+#trie les possibilite en fonction de la valeur dans la solutionrelache
+function triRelache(possibilite::Array{Int64,1}, solduale::solutionrelache, client::Int64)
+    sort!(possibilite, by=x->getvalue(solduale.y[client,x]), rev=true)
+end
+
+#trie les variables a brancher pour brancher sur les plus proche d'etre binaire, les depos sont prioritaires
+function ecart(k::Int64, solduale::solutionrelache, data::instance)
+	if (k <= data.nbDepos)
+		if (getvalue(solduale.x[k]) < 0.5)
+			return getvalue(solduale.x[k]) + 1
+		else
+			return 2 - getvalue(solduale.x[k])
+		end
+	else
+		k -= data.nbDepos
+		if (getvalue(solduale.y[k,1]) < 0.5)
+			max = getvalue(solduale.y[k,1])
+		else
+			max = 1 - getvalue(solduale.y[k,1])
+		end
+		for i=2:data.nbDepos
+			if (getvalue(solduale.y[k,i]) < 0.5)
+				tmp = getvalue(solduale.y[k,i])
+			else
+				tmp = 1 - getvalue(solduale.y[k,i])
+			end
+
+			if (tmp > max)
+				tmp = max
+			end
+		end
+
+		return max
+	end
+end
+function triebranch(possibilite::Array{Int64,1}, solduale::solutionrelache, data::instance)
+	sort!(possibilite, by=x->ecart(x, solduale, data), rev=true)
 end
